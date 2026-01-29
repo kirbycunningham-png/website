@@ -59,6 +59,7 @@
       overflow: hidden;
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
       display: none; /* hidden until chat opens */
+      z-index: 1000;
     }
   </style>
 </head>
@@ -71,14 +72,14 @@
       <img src="https://via.placeholder.com/200x150" alt="Item 1">
       <h3>Golden Sword</h3>
       <p>$50</p>
-      <button onclick="startChat('default two')">Chat with Seller</button>
+      <button onclick="startChat()">Chat with Seller</button>
     </div>
 
     <div class="product-card">
       <img src="https://via.placeholder.com/200x150" alt="Item 2">
       <h3>Magic Potion</h3>
       <p>$10</p>
-      <button onclick="startChat('default two')">Chat with Seller</button>
+      <button onclick="startChat()">Chat with Seller</button>
     </div>
   </div>
 
@@ -86,9 +87,8 @@
   <div id="talkjs-container"></div>
 
   <script>
-    // Wait for TalkJS to load
+    // Wait for TalkJS to be ready
     Talk.ready.then(function() {
-
       // Create users
       const me = new Talk.User({
         id: "default_one",
@@ -104,28 +104,26 @@
         welcomeMessage: "Hello! How can I help you?"
       });
 
-      // Initialize session
-      window.talkSession = new Talk.Session({
+      // Initialize TalkJS session
+      const talkSession = new Talk.Session({
         appId: "ta1FdR4b",
         me: me
       });
 
-      // Store inbox object globally
-      window.inbox = null;
+      // Always create and mount the inbox (hidden at first)
+      const inbox = talkSession.createInbox();
+      inbox.mount(document.getElementById("talkjs-container"));
 
-      window.startChat = function(sellerName) {
-        const conversation = window.talkSession.getOrCreateConversation(
+      // Function to open chat with seller
+      window.startChat = function() {
+        const conversation = talkSession.getOrCreateConversation(
           Talk.oneOnOneId(me, seller)
         );
         conversation.setParticipant(me);
         conversation.setParticipant(seller);
 
-        if(!window.inbox) {
-          window.inbox = window.talkSession.createInbox({selected: conversation});
-          window.inbox.mount(document.getElementById("talkjs-container"));
-        }
-
-        document.getElementById("talkjs-container").style.display = "block";
+        inbox.select(conversation); // show this conversation
+        document.getElementById("talkjs-container").style.display = "block"; // make visible
       }
     });
   </script>
