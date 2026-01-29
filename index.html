@@ -57,7 +57,6 @@ form button:hover { background:#1565c0; }
 
 </div>
 
-<!-- TalkJS -->
 <script src="https://cdn.talkjs.com/talk.js"></script>
 <script>
 // --- Users DB ---
@@ -148,7 +147,7 @@ function logout(){
   document.getElementById('loginSignupForm').style.display='block';
 }
 
-// --- TalkJS Chat (Sandbox App ID) ---
+// --- TalkJS Chat ---
 function openChat(){
   if(!currentUser) return alert('Select a user first');
 
@@ -156,13 +155,12 @@ function openChat(){
     const me = new Talk.User({ id: currentUser.username, name: currentUser.username });
     const seller = new Talk.User({ id:'Kirby', name:'Kirby' });
 
-    // Sandbox App ID (works on any domain)
-    const session = new Talk.Session({ appId:'tB1r7mJ6', me:me });
+    // YOUR App ID
+    const session = new Talk.Session({ appId:'t4meYSiB', me:me });
     const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me, seller));
     conversation.setParticipant(me);
     conversation.setParticipant(seller);
 
-    // Popup mode ensures it works on mobile
     session.createPopup({selected:conversation}).open();
   });
 }
