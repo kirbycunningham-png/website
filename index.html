@@ -21,12 +21,12 @@ header {
   align-items: center;
 }
 
-header .logo {
+.logo {
   font-size: 22px;
   font-weight: bold;
 }
 
-header .user {
+.user {
   font-size: 14px;
 }
 
@@ -34,6 +34,10 @@ header .user {
   max-width: 900px;
   margin: 30px auto;
   padding: 20px;
+}
+
+.hidden {
+  display: none;
 }
 
 form {
@@ -44,22 +48,18 @@ form {
   border-radius: 10px;
 }
 
-form input, form button {
+input, button {
   width: 100%;
   padding: 12px;
   margin-bottom: 15px;
 }
 
-form button {
+button {
   background: #1e88e5;
   color: white;
   border: none;
   font-weight: bold;
   cursor: pointer;
-}
-
-#shopPage, #itemPage {
-  display: none;
 }
 
 .item-card {
@@ -73,7 +73,6 @@ form button {
   margin-top: 20px;
   background: white;
   border-radius: 10px;
-  overflow: hidden;
 }
 </style>
 </head>
@@ -94,19 +93,19 @@ form button {
   <button type="submit">Continue</button>
 </form>
 
-<div id="shopPage">
+<div id="shopPage" class="hidden">
   <h2>Marketplace</h2>
   <div class="item-card">
     <h3>Garma</h3>
     <p>$50</p>
-    <button onclick="openItem()">Open</button>
+    <button id="openItemBtn">Open</button>
   </div>
 </div>
 
-<div id="itemPage">
+<div id="itemPage" class="hidden">
   <h2>Garma</h2>
   <p>$50</p>
-  <button onclick="openChat()">Open Chat</button>
+  <button id="openChatBtn">Open Chat</button>
   <div id="talkjs-container"></div>
 </div>
 
@@ -114,79 +113,108 @@ form button {
 
 <!-- TalkJS -->
 <script>
-(function(t,a,l){
-  var s=a.createElement('script');
+(function(t,a){
+  const s=a.createElement("script");
   s.async=1;
-  s.src='https://cdn.talkjs.com/talk.js';
+  s.src="https://cdn.talkjs.com/talk.js";
   a.head.appendChild(s);
-  t.Talk={ready:{then:function(f){s.onload=f}}};
+  t.Talk={ready:{then:f=>s.onload=f}};
 })(window,document);
 </script>
 
 <script>
-/* ===== DATA ===== */
+/* ========= STATE ========= */
 const SELLER = { username:"Kirby", password:"Kirby", role:"seller" };
 let usersDB = JSON.parse(localStorage.getItem("usersDB") || "{}");
 let currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
-let session = null;
+let talkSession = null;
 
-/* ===== AUTO LOGIN ===== */
-window.onload = () => {
-  if (!currentUser) return;
-  updateHeader();
-  currentUser.role === "seller" ? showSellerInbox() : showShop();
-};
+/* ========= ELEMENTS ========= */
+const loginForm = document.getElementById("loginForm");
+const shopPage = document.getElementById("shopPage");
+const itemPage = document.getElementById("itemPage");
+const userDisplay = document.getElementById("userDisplay");
+const talkContainer = document.getElementById("talkjs-container");
 
-/* ===== LOGIN ===== */
-loginForm.onsubmit = e => {
+/* ========= ROUTER ========= */
+function hideAll() {
+  loginForm.classList.add("hidden");
+  shopPage.classList.add("hidden");
+  itemPage.classList.add("hidden");
+}
+
+function showLogin() {
+  hideAll();
+  loginForm.classList.remove("hidden");
+}
+
+function showShop() {
+  hideAll();
+  shopPage.classList.remove("hidden");
+}
+
+function showItem() {
+  hideAll();
+  itemPage.classList.remove("hidden");
+}
+
+/* ========= HEADER ========= */
+function updateHeader() {
+  userDisplay.textContent = currentUser
+    ? `👤 ${currentUser.username} (${currentUser.role})`
+    : "";
+}
+
+/* ========= LOGIN ========= */
+loginForm.addEventListener("submit", e => {
   e.preventDefault();
-  const u = username.value;
-  const p = password.value;
+
+  const u = username.value.trim();
+  const p = password.value.trim();
+
+  if (!u || !p) return;
 
   if (u === SELLER.username && p === SELLER.password) {
     currentUser = SELLER;
   } else {
-    if (!usersDB[u]) usersDB[u] = { password:p, role:"buyer" };
+    if (!usersDB[u]) {
+      usersDB[u] = { password:p, role:"buyer" };
+      localStorage.setItem("usersDB", JSON.stringify(usersDB));
+    }
     if (usersDB[u].password !== p) return alert("Wrong password");
-    localStorage.setItem("usersDB", JSON.stringify(usersDB));
     currentUser = { username:u, role:"buyer" };
   }
 
   localStorage.setItem("currentUser", JSON.stringify(currentUser));
   updateHeader();
-  currentUser.role === "seller" ? showSellerInbox() : showShop();
-};
 
-/* ===== UI ===== */
-function updateHeader() {
-  userDisplay.innerHTML = `👤 ${currentUser.username} (${currentUser.role})`;
-}
+  currentUser.role === "seller" ? openSellerInbox() : showShop();
+});
 
-function showShop() {
-  loginForm.style.display = "none";
-  shopPage.style.display = "block";
-  itemPage.style.display = "none";
-}
+/* ========= AUTO LOGIN ========= */
+window.addEventListener("load", () => {
+  if (!currentUser) {
+    showLogin();
+    return;
+  }
+  updateHeader();
+  currentUser.role === "seller" ? openSellerInbox() : showShop();
+});
 
-function openItem() {
-  shopPage.style.display = "none";
-  itemPage.style.display = "block";
-}
-
-/* ===== CHAT CORE ===== */
+/* ========= TALKJS ========= */
 function createSession(me) {
-  if (session) session.destroy();
-  session = new Talk.Session({ appId:"tbR8alHz", me });
-  return session;
+  if (talkSession) talkSession.destroy();
+  talkSession = new Talk.Session({ appId:"tbR8alHz", me });
+  return talkSession;
 }
 
 /* BUYER CHAT */
-function openChat() {
-  itemPage.style.display = "block";
-  talkjs-container.innerHTML = "";
+document.getElementById("openChatBtn").onclick = () => {
+  showItem();
+  talkContainer.innerHTML = "";
 
   Talk.ready.then(() => {
-    const me = new Talk.User({ id: currentUser.username, name: currentUser.username });
+    const me = new Talk.User({ id:currentUser.username, name:currentUser.username });
     const seller = new Talk.User({ id:"Kirby", name:"Kirby" });
 
     const s = createSession(me);
@@ -194,24 +222,24 @@ function openChat() {
     convo.setParticipant(me);
     convo.setParticipant(seller);
 
-    s.createInbox({ selected: convo })
-     .mount(document.getElementById("talkjs-container"));
+    s.createInbox({ selected: convo }).mount(talkContainer);
   });
-}
+};
 
 /* SELLER INBOX */
-function showSellerInbox() {
-  loginForm.style.display = "none";
-  shopPage.style.display = "none";
-  itemPage.style.display = "block";
-  talkjs-container.innerHTML = "";
+function openSellerInbox() {
+  showItem();
+  talkContainer.innerHTML = "";
 
   Talk.ready.then(() => {
     const seller = new Talk.User({ id:"Kirby", name:"Kirby" });
     const s = createSession(seller);
-    s.createInbox().mount(document.getElementById("talkjs-container"));
+    s.createInbox().mount(talkContainer);
   });
 }
+
+/* ========= NAV ========= */
+document.getElementById("openItemBtn").onclick = showItem;
 </script>
 
 </body>
