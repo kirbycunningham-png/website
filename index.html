@@ -2,184 +2,100 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Marketplace - Kirby Seller</title>
+<title>Kirby's Marketplace</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
 body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
   background: #f2f3f5;
-  color: #333;
 }
 
-/* Header */
 header {
   background: linear-gradient(90deg, #1e88e5, #42a5f5);
   color: white;
   padding: 20px;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: bold;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-/* Container */
 .container {
   max-width: 900px;
-  margin: 40px auto;
-  padding: 0 20px;
+  margin: 30px auto;
+  padding: 20px;
 }
 
-/* Forms */
 form {
   background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  padding: 25px;
   max-width: 400px;
   margin: auto;
-}
-
-form h2 {
-  text-align: center;
-  margin-bottom: 20px;
+  border-radius: 10px;
 }
 
 form input, form button {
   width: 100%;
   padding: 12px;
   margin-bottom: 15px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 16px;
 }
 
 form button {
   background: #1e88e5;
   color: white;
   border: none;
-  cursor: pointer;
   font-weight: bold;
-  transition: 0.3s;
+  cursor: pointer;
 }
 
-form button:hover {
-  background: #1565c0;
-}
-
-/* Shop Page */
-#shopPage {
+#shopPage, #itemPage {
   display: none;
-}
-
-.item-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
-  gap: 25px;
 }
 
 .item-card {
-  background: linear-gradient(145deg, #ffffff, #e0e5ec);
-  border-radius: 12px;
+  background: white;
   padding: 20px;
+  border-radius: 10px;
   text-align: center;
-  box-shadow: 6px 6px 12px #c8ccd1,
-              -6px -6px 12px #ffffff;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.item-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 8px 8px 20px #c8ccd1,
-              -8px -8px 20px #ffffff;
-}
-
-.item-card img {
-  max-width: 100%;
-  border-radius: 8px;
-  margin-bottom: 15px;
-}
-
-.item-title {
-  font-size: 20px;
-  margin-bottom: 10px;
-  font-weight: 700;
-}
-
-.item-price {
-  color: #4caf50;
-  font-weight: bold;
-  margin-bottom: 15px;
-  font-size: 18px;
-}
-
-.item-card button {
-  background: #42a5f5;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  font-size: 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.item-card button:hover {
-  background: #1e88e5;
-  transform: translateY(-3px);
-}
-
-/* Item Page */
-#itemPage {
-  display: none;
-}
-
-#itemPage h2 {
-  font-size: 28px;
-  margin-bottom: 10px;
 }
 
 #talkjs-container {
-  width: 100%;
   height: 500px;
   margin-top: 20px;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-/* Responsive */
-@media(max-width:600px){
-  .item-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
+
 <body>
 
 <header>Kirby's Marketplace</header>
 
 <div class="container">
 
-  <!-- Signup/Login -->
-  <form id="loginSignupForm">
-    <h2>Sign Up / Login</h2>
-    <input type="text" id="username" placeholder="Username" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <button type="submit">Continue</button>
-  </form>
+<form id="loginForm">
+  <h2>Login / Sign Up</h2>
+  <input id="username" placeholder="Username" required>
+  <input id="password" type="password" placeholder="Password" required>
+  <button type="submit">Continue</button>
+</form>
 
-  <!-- Shop Page -->
-  <div id="shopPage">
-    <h2>Shop</h2>
-    <div class="item-grid" id="itemsContainer"></div>
+<div id="shopPage">
+  <h2>Shop</h2>
+  <div class="item-card">
+    <h3>Garma</h3>
+    <p>$50</p>
+    <button onclick="openItem()">View & Chat</button>
   </div>
+</div>
 
-  <!-- Item Page -->
-  <div id="itemPage">
-    <h2 id="itemTitle"></h2>
-    <div class="item-price" id="itemPrice"></div>
-    <button onclick="openChat()">Chat with Seller</button>
-    <div id="talkjs-container"></div>
-  </div>
+<div id="itemPage">
+  <h2>Garma</h2>
+  <p>$50</p>
+  <button onclick="openChat()">Chat with Seller</button>
+  <div id="talkjs-container"></div>
+</div>
 
 </div>
 
@@ -188,100 +104,123 @@ form button:hover {
 (function(t,a,l,k,j,s){
   s=a.createElement('script');s.async=1;s.src='https://cdn.talkjs.com/talk.js';
   a.head.appendChild(s);k=t.Promise;
-  t.Talk={v:3,ready:{then:function(f){if(k)return new k(function(r,e){l.push([f,r,e])});l.push([f])},catch:function(){return k&&new k()},c:l}};
+  t.Talk={v:3,ready:{then:function(f){if(k)return new k(function(r,e){l.push([f,r,e])});l.push([f])}}};
 })(window,document,[]);
 </script>
 
 <script>
-// --- In-browser user "database" ---
-let usersDB = JSON.parse(localStorage.getItem('usersDB') || '{}');
-const sellerAccount = {username:'Kirby', password:'Kirby'};
+/* ============================
+   LOCAL DATABASE
+============================ */
+let usersDB = JSON.parse(localStorage.getItem("usersDB") || "{}");
 let currentUser = null;
 
-// Signup/Login form
-document.getElementById('loginSignupForm').onsubmit = function(e){
-  e.preventDefault();
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
+const SELLER = {
+  username: "Kirby",
+  password: "Kirby",
+  role: "seller"
+};
 
-  if(username===sellerAccount.username && password===sellerAccount.password){
-    currentUser = {username:'Kirby', role:'seller'};
-    alert('Welcome, Kirby! You are logged in as seller.');
-    showSellerView();
+/* ============================
+   LOGIN / SIGNUP
+============================ */
+document.getElementById("loginForm").onsubmit = function(e) {
+  e.preventDefault();
+
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  // Seller login
+  if (username === SELLER.username && password === SELLER.password) {
+    currentUser = SELLER;
+    showSellerInbox();
     return;
   }
 
-  // If new buyer account
-  if(!usersDB[username]){
-    usersDB[username] = {password};
-    localStorage.setItem('usersDB', JSON.stringify(usersDB));
-    alert('Buyer account created!');
+  // Buyer signup
+  if (!usersDB[username]) {
+    usersDB[username] = { password, role: "buyer" };
+    localStorage.setItem("usersDB", JSON.stringify(usersDB));
   }
 
-  // Check credentials
-  if(usersDB[username].password !== password){
-    return alert('Invalid credentials!');
+  // Buyer login check
+  if (usersDB[username].password !== password) {
+    alert("Wrong password");
+    return;
   }
 
-  currentUser = {username, role:'buyer'};
+  currentUser = { username, role: "buyer" };
   showShop();
 };
 
-// --- Shop Page ---
-function showShop(){
-  document.getElementById('loginSignupForm').style.display='none';
-  document.getElementById('shopPage').style.display='block';
-  renderItems();
+/* ============================
+   UI NAV
+============================ */
+function showShop() {
+  loginForm.style.display = "none";
+  shopPage.style.display = "block";
 }
 
-function renderItems(){
-  const container = document.getElementById('itemsContainer');
-  container.innerHTML = '';
-  const item = {id:'garma', title:'Garma', price:50, img:'https://via.placeholder.com/200x120?text=Garma'};
-  const card = document.createElement('div');
-  card.className='item-card';
-  card.innerHTML=`<img src="${item.img}" alt="${item.title}">
-                  <div class="item-title">${item.title}</div>
-                  <div class="item-price">$${item.price}</div>
-                  <button onclick="openItem('${item.id}')">View & Chat</button>`;
-  container.appendChild(card);
+function openItem() {
+  shopPage.style.display = "none";
+  itemPage.style.display = "block";
 }
 
-// --- Item Page ---
-function openItem(itemId){
-  document.getElementById('shopPage').style.display='none';
-  document.getElementById('itemPage').style.display='block';
-  if(itemId==='garma'){
-    document.getElementById('itemTitle').innerText='Garma';
-    document.getElementById('itemPrice').innerText='$50';
-  }
-}
+/* ============================
+   CHAT (BUYER → SELLER DM)
+============================ */
+function openChat() {
+  Talk.ready.then(() => {
+    const me = new Talk.User({
+      id: currentUser.username,
+      name: currentUser.username
+    });
 
-// --- TalkJS Chat ---
-function openChat(){
-  if(!currentUser) return alert('Select a user first');
-  const container = document.getElementById('talkjs-container');
-  container.style.display='block';
+    const seller = new Talk.User({
+      id: "Kirby",
+      name: "Kirby"
+    });
 
-  Talk.ready.then(()=>{
-    const me = new Talk.User({ id: currentUser.username, name: currentUser.username });
-    const seller = new Talk.User({ id:'Kirby', name:'Kirby' });
+    const session = new Talk.Session({
+      appId: "tbR8alHz",
+      me
+    });
 
-    const session = new Talk.Session({ appId:'tbR8alHz', me:me });
-    const conversation = session.getOrCreateConversation('garma_conversation');
-    conversation.setParticipant(me);
-    conversation.setParticipant(seller);
+    // 🔒 UNIQUE DM PER BUYER
+    const conversationId = "garma_" + currentUser.username;
 
-    session.createInbox({ selected: conversation }).mount(container);
+    const convo = session.getOrCreateConversation(conversationId);
+    convo.setParticipant(me);
+    convo.setParticipant(seller);
+
+    session.createInbox({ selected: convo })
+      .mount(document.getElementById("talkjs-container"));
   });
 }
 
-// --- Seller view ---
-function showSellerView(){
-  document.getElementById('loginSignupForm').style.display='none';
-  document.getElementById('shopPage').style.display='block';
-  openChat(); // auto open chat inbox
+/* ============================
+   SELLER INBOX
+============================ */
+function showSellerInbox() {
+  loginForm.style.display = "none";
+  itemPage.style.display = "block";
+
+  Talk.ready.then(() => {
+    const seller = new Talk.User({
+      id: "Kirby",
+      name: "Kirby"
+    });
+
+    const session = new Talk.Session({
+      appId: "tbR8alHz",
+      me: seller
+    });
+
+    session.createInbox()
+      .mount(document.getElementById("talkjs-container"));
+  });
 }
 </script>
+
 </body>
 </html>
