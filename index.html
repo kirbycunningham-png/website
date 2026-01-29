@@ -16,13 +16,18 @@
     }
 
     #open-chat {
-      padding: 15px 30px;
-      background-color: #00ff00; /* Green button */
-      color: #000;
+      width: 120px;
+      height: 120px;
+      background-color: #00ff00; /* Bright green */
       border: none;
-      border-radius: 10px;
+      border-radius: 50%; /* Circle */
       cursor: pointer;
-      font-size: 18px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       transition: transform 0.2s;
     }
 
@@ -46,8 +51,11 @@
     let session;
     let conversation;
 
-    // Wait for TalkJS to load
+    // Wait for TalkJS SDK to load
     Talk.ready.then(() => {
+      console.log("TalkJS loaded");
+
+      // Define users
       const personOne = new Talk.User({
         id: "person1",
         name: "Person One",
@@ -64,9 +72,9 @@
         welcomeMessage: "Hi! I'm Person Two."
       });
 
-      // Create TalkJS session with your App ID
+      // Create TalkJS session
       session = new Talk.Session({
-        appId: "tUlq8yXw", // Replace with your TalkJS App ID
+        appId: "tUlq8yXw", // Your App ID
         me: personOne
       });
 
@@ -75,15 +83,18 @@
       conversation.setParticipant(personOne);
       conversation.setParticipant(personTwo);
 
-      // Mount inbox (but keep it hidden until button click)
+      // Mount inbox but keep hidden
       const inbox = session.createInbox({ selected: conversation });
       inbox.mount(document.getElementById("talkjs-container"));
-    });
 
-    // Button click opens the chat
+      console.log("TalkJS session and conversation ready");
+    }).catch(e => console.error("TalkJS failed to load:", e));
+
+    // Button opens the chat
     document.getElementById("open-chat").addEventListener("click", () => {
       document.getElementById("talkjs-container").style.display = "block";
       document.getElementById("open-chat").style.display = "none";
+      console.log("Chat opened");
     });
   </script>
 
