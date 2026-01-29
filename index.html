@@ -99,29 +99,25 @@ form button {
 
 </div>
 
-<!-- TalkJS -->
+<!-- OFFICIAL TalkJS LOADER -->
 <script>
 (function(t,a,l){
-  const s=a.createElement('script');
+  var s=a.createElement('script');
   s.async=1;
   s.src='https://cdn.talkjs.com/talk.js';
   a.head.appendChild(s);
-  t.Talk={ready:{then:f=>s.onload=f}};
+  t.Talk={ready:{then:function(f){s.onload=f}}};
 })(window,document);
 </script>
 
 <script>
-/* =====================
-   DATABASE + SESSION
-===================== */
+/* ========= DATA ========= */
 const SELLER = { username:"Kirby", password:"Kirby", role:"seller" };
 let usersDB = JSON.parse(localStorage.getItem("usersDB") || "{}");
 let currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
-let talkSession = null;
+let session = null;
 
-/* =====================
-   AUTO LOGIN ON REFRESH
-===================== */
+/* ========= AUTO LOGIN ========= */
 window.onload = () => {
   if (!currentUser) return;
 
@@ -132,16 +128,13 @@ window.onload = () => {
   }
 };
 
-/* =====================
-   LOGIN / SIGNUP
-===================== */
+/* ========= LOGIN ========= */
 loginForm.onsubmit = e => {
   e.preventDefault();
 
-  const username = usernameInput.value = document.getElementById("username").value;
+  const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
-  // Seller login
   if (username === SELLER.username && password === SELLER.password) {
     currentUser = SELLER;
     localStorage.setItem("currentUser", JSON.stringify(currentUser));
@@ -149,7 +142,6 @@ loginForm.onsubmit = e => {
     return;
   }
 
-  // Buyer signup
   if (!usersDB[username]) {
     usersDB[username] = { password, role:"buyer" };
     localStorage.setItem("usersDB", JSON.stringify(usersDB));
@@ -165,9 +157,7 @@ loginForm.onsubmit = e => {
   showShop();
 };
 
-/* =====================
-   UI NAV
-===================== */
+/* ========= UI ========= */
 function showShop() {
   loginForm.style.display = "none";
   shopPage.style.display = "block";
@@ -179,65 +169,40 @@ function openItem() {
   itemPage.style.display = "block";
 }
 
-/* =====================
-   TALKJS CLEAN SESSION
-===================== */
-function createSession(meUser) {
-  if (talkSession) talkSession.destroy();
-
-  talkSession = new Talk.Session({
-    appId: "tbR8alHz",
-    me: meUser
-  });
-
-  return talkSession;
+/* ========= TALKJS ========= */
+function createSession(me) {
+  if (session) session.destroy();
+  session = new Talk.Session({ appId:"tbR8alHz", me });
+  return session;
 }
 
-/* =====================
-   BUYER CHAT (DM)
-===================== */
+/* BUYER DM */
 function openChat() {
   Talk.ready.then(() => {
-    const me = new Talk.User({
-      id: currentUser.username,
-      name: currentUser.username
-    });
+    const me = new Talk.User({ id: currentUser.username, name: currentUser.username });
+    const seller = new Talk.User({ id:"Kirby", name:"Kirby" });
 
-    const seller = new Talk.User({
-      id: "Kirby",
-      name: "Kirby"
-    });
+    const s = createSession(me);
+    const convo = s.getOrCreateConversation("garma_" + currentUser.username);
 
-    const session = createSession(me);
-    const convoId = "garma_" + currentUser.username;
-
-    const convo = session.getOrCreateConversation(convoId);
     convo.setParticipant(me);
     convo.setParticipant(seller);
 
-    session.createInbox({ selected: convo })
+    s.createInbox({ selected: convo })
       .mount(document.getElementById("talkjs-container"));
   });
 }
 
-/* =====================
-   SELLER INBOX
-===================== */
+/* SELLER INBOX */
 function showSellerInbox() {
   loginForm.style.display = "none";
   shopPage.style.display = "none";
   itemPage.style.display = "block";
 
   Talk.ready.then(() => {
-    const seller = new Talk.User({
-      id: "Kirby",
-      name: "Kirby"
-    });
-
-    const session = createSession(seller);
-
-    session.createInbox()
-      .mount(document.getElementById("talkjs-container"));
+    const seller = new Talk.User({ id:"Kirby", name:"Kirby" });
+    const s = createSession(seller);
+    s.createInbox().mount(document.getElementById("talkjs-container"));
   });
 }
 </script>
