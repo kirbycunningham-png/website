@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Marketplace Demo - Eldorado Style</title>
+<title>Marketplace - Kirby Seller</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
 body {
@@ -25,41 +25,46 @@ header {
 
 /* Container */
 .container {
-  max-width: 1000px;
+  max-width: 900px;
   margin: 40px auto;
   padding: 0 20px;
 }
 
-/* Login Page */
-#loginPage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 60vh;
-  text-align: center;
+/* Forms */
+form {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  max-width: 400px;
+  margin: auto;
 }
 
-#loginPage h2 {
-  font-size: 32px;
+form h2 {
+  text-align: center;
   margin-bottom: 20px;
 }
 
-#loginPage button {
+form input, form button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+form button {
   background: #1e88e5;
   color: white;
   border: none;
-  padding: 15px 40px;
-  margin: 15px;
-  font-size: 20px;
-  border-radius: 8px;
   cursor: pointer;
+  font-weight: bold;
   transition: 0.3s;
 }
 
-#loginPage button:hover {
+form button:hover {
   background: #1565c0;
-  transform: translateY(-3px);
 }
 
 /* Shop Page */
@@ -150,29 +155,22 @@ header {
 </head>
 <body>
 
-<header>My Marketplace</header>
+<header>Kirby's Marketplace</header>
 
 <div class="container">
 
-  <!-- Login Page -->
-  <div id="loginPage">
-    <h2>Login as</h2>
-    <button onclick="setUser('buyer')">Buyer</button>
-    <button onclick="setUser('seller')">Seller</button>
-  </div>
+  <!-- Signup/Login -->
+  <form id="loginSignupForm">
+    <h2>Sign Up / Login</h2>
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Continue</button>
+  </form>
 
   <!-- Shop Page -->
   <div id="shopPage">
     <h2>Shop</h2>
-    <div class="item-grid">
-      <div class="item-card">
-        <img src="https://via.placeholder.com/200x120?text=Garma" alt="Garma">
-        <div class="item-title">Garma</div>
-        <div class="item-price">$50</div>
-        <button onclick="openItem('garma')">View & Chat</button>
-      </div>
-      <!-- You can add more items here -->
-    </div>
+    <div class="item-grid" id="itemsContainer"></div>
   </div>
 
   <!-- Item Page -->
@@ -195,49 +193,95 @@ header {
 </script>
 
 <script>
-// Users
+// --- In-browser user "database" ---
+let usersDB = JSON.parse(localStorage.getItem('usersDB') || '{}');
+const sellerAccount = {username:'Kirby', password:'Kirby'};
 let currentUser = null;
-const users = {
-  buyer: { id: "buyer_1", name: "Buyer" },
-  seller: { id: "seller_1", name: "Seller" }
+
+// Signup/Login form
+document.getElementById('loginSignupForm').onsubmit = function(e){
+  e.preventDefault();
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+
+  if(username===sellerAccount.username && password===sellerAccount.password){
+    currentUser = {username:'Kirby', role:'seller'};
+    alert('Welcome, Kirby! You are logged in as seller.');
+    showSellerView();
+    return;
+  }
+
+  // If new buyer account
+  if(!usersDB[username]){
+    usersDB[username] = {password};
+    localStorage.setItem('usersDB', JSON.stringify(usersDB));
+    alert('Buyer account created!');
+  }
+
+  // Check credentials
+  if(usersDB[username].password !== password){
+    return alert('Invalid credentials!');
+  }
+
+  currentUser = {username, role:'buyer'};
+  showShop();
 };
 
-// Login
-function setUser(userKey){
-  currentUser = users[userKey];
-  document.getElementById('loginPage').style.display = 'none';
-  document.getElementById('shopPage').style.display = 'block';
+// --- Shop Page ---
+function showShop(){
+  document.getElementById('loginSignupForm').style.display='none';
+  document.getElementById('shopPage').style.display='block';
+  renderItems();
 }
 
-// Open Item
-function openItem(item){
-  document.getElementById('shopPage').style.display = 'none';
-  document.getElementById('itemPage').style.display = 'block';
-  if(item==='garma'){
+function renderItems(){
+  const container = document.getElementById('itemsContainer');
+  container.innerHTML = '';
+  const item = {id:'garma', title:'Garma', price:50, img:'https://via.placeholder.com/200x120?text=Garma'};
+  const card = document.createElement('div');
+  card.className='item-card';
+  card.innerHTML=`<img src="${item.img}" alt="${item.title}">
+                  <div class="item-title">${item.title}</div>
+                  <div class="item-price">$${item.price}</div>
+                  <button onclick="openItem('${item.id}')">View & Chat</button>`;
+  container.appendChild(card);
+}
+
+// --- Item Page ---
+function openItem(itemId){
+  document.getElementById('shopPage').style.display='none';
+  document.getElementById('itemPage').style.display='block';
+  if(itemId==='garma'){
     document.getElementById('itemTitle').innerText='Garma';
     document.getElementById('itemPrice').innerText='$50';
   }
 }
 
-// Open TalkJS chat
+// --- TalkJS Chat ---
 function openChat(){
   if(!currentUser) return alert('Select a user first');
   const container = document.getElementById('talkjs-container');
   container.style.display='block';
 
   Talk.ready.then(()=>{
-    const me = new Talk.User({ id: currentUser.id, name: currentUser.name });
-    const other = new Talk.User(users.seller);
-    const session = new Talk.Session({ appId:'tbR8alHz', me:me });
+    const me = new Talk.User({ id: currentUser.username, name: currentUser.username });
+    const seller = new Talk.User({ id:'Kirby', name:'Kirby' });
 
-    const conversation = session.getOrCreateConversation('garma_item_conversation');
+    const session = new Talk.Session({ appId:'tbR8alHz', me:me });
+    const conversation = session.getOrCreateConversation('garma_conversation');
     conversation.setParticipant(me);
-    conversation.setParticipant(other);
+    conversation.setParticipant(seller);
 
     session.createInbox({ selected: conversation }).mount(container);
   });
 }
-</script>
 
+// --- Seller view ---
+function showSellerView(){
+  document.getElementById('loginSignupForm').style.display='none';
+  document.getElementById('shopPage').style.display='block';
+  openChat(); // auto open chat inbox
+}
+</script>
 </body>
 </html>
