@@ -2,29 +2,101 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>TalkJS Demo: Two Users</title>
+<title>Marketplace Demo - Garma</title>
 <style>
-body { font-family: Arial; background:#f4f6f8; margin:0; }
-.container { max-width:500px; margin:20px auto; padding:20px; background:white; border-radius:8px; }
-button { padding:10px 15px; margin:5px; cursor:pointer; }
-#talkjs { height:500px; margin-top:15px; }
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f5f6fa;
+}
+
+header {
+  background: #1e88e5;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+}
+
+.item-title {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.item-price {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #4caf50;
+  font-weight: bold;
+}
+
+button {
+  background: #1e88e5;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #1565c0;
+}
+
+#talkjs-container {
+  width: 100%;
+  height: 500px;
+  margin-top: 20px;
+  display: none; /* hidden until chat opens */
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+/* User selection panel */
+#userSelect {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#userSelect button {
+  margin: 0 10px;
+}
 </style>
 </head>
 <body>
 
+<header>My Marketplace</header>
+
 <div class="container">
-  <h2>TalkJS Two-Person Demo</h2>
-  <p>Click below to switch between Buyer and Seller:</p>
-  <button onclick="setUser('buyer')">Login as Buyer</button>
-  <button onclick="setUser('seller')">Login as Seller</button>
+
+  <div id="userSelect">
+    <p>Choose a user to simulate:</p>
+    <button onclick="setUser('buyer')">Login as Buyer</button>
+    <button onclick="setUser('seller')">Login as Seller</button>
+  </div>
+
+  <div class="item">
+    <div class="item-title">Garma</div>
+    <div class="item-price">$50</div>
+    <button onclick="openChat()">Chat with Seller</button>
+  </div>
+
+  <div id="talkjs-container"></div>
 </div>
 
-<div class="container" id="chatContainer" style="display:none;">
-  <h3>Marketplace Chat</h3>
-  <div id="talkjs"></div>
-</div>
-
-<!-- TalkJS -->
+<!-- TalkJS Loader -->
 <script>
 (function(t,a,l,k,j,s){
   s=a.createElement('script');s.async=1;s.src='https://cdn.talkjs.com/talk.js';
@@ -34,46 +106,49 @@ button { padding:10px 15px; margin:5px; cursor:pointer; }
 </script>
 
 <script>
+// User definitions
 let currentUser = null;
-
-// Define both users
 const users = {
   buyer: { id: "buyer_1", name: "Buyer" },
   seller: { id: "seller_1", name: "Seller" }
 };
 
-// Function to switch users
+// Select which user is active
 function setUser(userKey) {
   currentUser = users[userKey];
-  document.getElementById('chatContainer').style.display = 'block';
-  startChat();
+  alert(`Logged in as ${currentUser.name}`);
 }
 
-// Start chat session
-function startChat() {
+// Open TalkJS chat
+function openChat() {
+  if (!currentUser) return alert("Please select a user first!");
+
+  const container = document.getElementById("talkjs-container");
+  container.style.display = "block";
+
   Talk.ready.then(() => {
+
     const me = new Talk.User({
       id: currentUser.id,
       name: currentUser.name
     });
 
-    const other = (currentUser.id === "buyer_1") ? 
-                  new Talk.User(users.seller) : 
-                  new Talk.User(users.buyer);
+    // The other participant is always the seller
+    const other = new Talk.User(users.seller);
 
     const session = new Talk.Session({
       appId: "tbR8alHz", // Your TalkJS App ID
       me: me
     });
 
-    // Create or get conversation
-    const conversation = session.getOrCreateConversation("demo_conversation");
+    // Create a conversation for this item
+    const conversation = session.getOrCreateConversation("garma_item_conversation");
     conversation.setParticipant(me);
     conversation.setParticipant(other);
 
     // Mount inbox
     const inbox = session.createInbox({ selected: conversation });
-    inbox.mount(document.getElementById("talkjs"));
+    inbox.mount(container);
   });
 }
 </script>
