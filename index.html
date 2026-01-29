@@ -2,76 +2,149 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Marketplace Demo - Garma</title>
+<title>Marketplace Demo - Eldorado Style</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  background: #f5f6fa;
+  font-family: 'Roboto', sans-serif;
+  background: #f2f3f5;
+  color: #333;
 }
 
+/* Header */
 header {
-  background: #1e88e5;
+  background: linear-gradient(90deg, #1e88e5, #42a5f5);
   color: white;
-  padding: 15px;
-  text-align: center;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.container {
-  max-width: 600px;
-  margin: 40px auto;
-  background: white;
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
-}
-
-.item-title {
-  font-size: 22px;
-  margin-bottom: 10px;
-}
-
-.item-price {
-  font-size: 18px;
-  margin-bottom: 20px;
-  color: #4caf50;
+  font-size: 28px;
   font-weight: bold;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-button {
+/* Container */
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* Login Page */
+#loginPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  text-align: center;
+}
+
+#loginPage h2 {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+#loginPage button {
   background: #1e88e5;
   color: white;
   border: none;
-  padding: 12px 20px;
+  padding: 15px 40px;
+  margin: 15px;
+  font-size: 20px;
+  border-radius: 8px;
   cursor: pointer;
-  border-radius: 4px;
-  font-size: 16px;
   transition: 0.3s;
 }
 
-button:hover {
+#loginPage button:hover {
   background: #1565c0;
+  transform: translateY(-3px);
+}
+
+/* Shop Page */
+#shopPage {
+  display: none;
+}
+
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+  gap: 25px;
+}
+
+.item-card {
+  background: linear-gradient(145deg, #ffffff, #e0e5ec);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 6px 6px 12px #c8ccd1,
+              -6px -6px 12px #ffffff;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.item-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 8px 8px 20px #c8ccd1,
+              -8px -8px 20px #ffffff;
+}
+
+.item-card img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.item-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.item-price {
+  color: #4caf50;
+  font-weight: bold;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.item-card button {
+  background: #42a5f5;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.item-card button:hover {
+  background: #1e88e5;
+  transform: translateY(-3px);
+}
+
+/* Item Page */
+#itemPage {
+  display: none;
+}
+
+#itemPage h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
 }
 
 #talkjs-container {
   width: 100%;
   height: 500px;
   margin-top: 20px;
-  display: none; /* hidden until chat opens */
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-/* User selection panel */
-#userSelect {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-#userSelect button {
-  margin: 0 10px;
+/* Responsive */
+@media(max-width:600px){
+  .item-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -81,22 +154,38 @@ button:hover {
 
 <div class="container">
 
-  <div id="userSelect">
-    <p>Choose a user to simulate:</p>
-    <button onclick="setUser('buyer')">Login as Buyer</button>
-    <button onclick="setUser('seller')">Login as Seller</button>
+  <!-- Login Page -->
+  <div id="loginPage">
+    <h2>Login as</h2>
+    <button onclick="setUser('buyer')">Buyer</button>
+    <button onclick="setUser('seller')">Seller</button>
   </div>
 
-  <div class="item">
-    <div class="item-title">Garma</div>
-    <div class="item-price">$50</div>
+  <!-- Shop Page -->
+  <div id="shopPage">
+    <h2>Shop</h2>
+    <div class="item-grid">
+      <div class="item-card">
+        <img src="https://via.placeholder.com/200x120?text=Garma" alt="Garma">
+        <div class="item-title">Garma</div>
+        <div class="item-price">$50</div>
+        <button onclick="openItem('garma')">View & Chat</button>
+      </div>
+      <!-- You can add more items here -->
+    </div>
+  </div>
+
+  <!-- Item Page -->
+  <div id="itemPage">
+    <h2 id="itemTitle"></h2>
+    <div class="item-price" id="itemPrice"></div>
     <button onclick="openChat()">Chat with Seller</button>
+    <div id="talkjs-container"></div>
   </div>
 
-  <div id="talkjs-container"></div>
 </div>
 
-<!-- TalkJS Loader -->
+<!-- TalkJS -->
 <script>
 (function(t,a,l,k,j,s){
   s=a.createElement('script');s.async=1;s.src='https://cdn.talkjs.com/talk.js';
@@ -106,49 +195,46 @@ button:hover {
 </script>
 
 <script>
-// User definitions
+// Users
 let currentUser = null;
 const users = {
   buyer: { id: "buyer_1", name: "Buyer" },
   seller: { id: "seller_1", name: "Seller" }
 };
 
-// Select which user is active
-function setUser(userKey) {
+// Login
+function setUser(userKey){
   currentUser = users[userKey];
-  alert(`Logged in as ${currentUser.name}`);
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('shopPage').style.display = 'block';
+}
+
+// Open Item
+function openItem(item){
+  document.getElementById('shopPage').style.display = 'none';
+  document.getElementById('itemPage').style.display = 'block';
+  if(item==='garma'){
+    document.getElementById('itemTitle').innerText='Garma';
+    document.getElementById('itemPrice').innerText='$50';
+  }
 }
 
 // Open TalkJS chat
-function openChat() {
-  if (!currentUser) return alert("Please select a user first!");
+function openChat(){
+  if(!currentUser) return alert('Select a user first');
+  const container = document.getElementById('talkjs-container');
+  container.style.display='block';
 
-  const container = document.getElementById("talkjs-container");
-  container.style.display = "block";
-
-  Talk.ready.then(() => {
-
-    const me = new Talk.User({
-      id: currentUser.id,
-      name: currentUser.name
-    });
-
-    // The other participant is always the seller
+  Talk.ready.then(()=>{
+    const me = new Talk.User({ id: currentUser.id, name: currentUser.name });
     const other = new Talk.User(users.seller);
+    const session = new Talk.Session({ appId:'tbR8alHz', me:me });
 
-    const session = new Talk.Session({
-      appId: "tbR8alHz", // Your TalkJS App ID
-      me: me
-    });
-
-    // Create a conversation for this item
-    const conversation = session.getOrCreateConversation("garma_item_conversation");
+    const conversation = session.getOrCreateConversation('garma_item_conversation');
     conversation.setParticipant(me);
     conversation.setParticipant(other);
 
-    // Mount inbox
-    const inbox = session.createInbox({ selected: conversation });
-    inbox.mount(container);
+    session.createInbox({ selected: conversation }).mount(container);
   });
 }
 </script>
