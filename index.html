@@ -37,7 +37,6 @@
   <div id="talkjs-container"></div>
 
   <script>
-    // Wait for TalkJS
     Talk.ready.then(function() {
 
       const me = new Talk.User({
@@ -55,15 +54,15 @@
       });
 
       const session = new Talk.Session({
-        appId: "ta1FdR4b",
+        appId: "t4meYSiB",
         me: me
       });
 
-      let inboxMounted = false; // track if inbox is mounted
+      let inboxMounted = false;
 
       window.startChat = function() {
         const container = document.getElementById("talkjs-container");
-        container.style.display = "block"; // show container
+        container.style.display = "block";
 
         const conversation = session.getOrCreateConversation(
           Talk.oneOnOneId(me, seller)
@@ -76,7 +75,7 @@
           inbox.mount(container);
           inboxMounted = true;
         } else {
-          // If already mounted, just select conversation
+          // If already mounted, select conversation
           session.createInbox({ selected: conversation }).select(conversation);
         }
       }
