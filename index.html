@@ -9,12 +9,12 @@
 <style>
 body {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: Roboto, sans-serif;
   background: #f2f3f5;
 }
 
 header {
-  background: linear-gradient(90deg, #1e88e5, #42a5f5);
+  background: linear-gradient(90deg,#1e88e5,#42a5f5);
   color: white;
   padding: 20px;
   font-size: 26px;
@@ -101,64 +101,77 @@ form button {
 
 <!-- TalkJS -->
 <script>
-(function(t,a,l,k,j,s){
-  s=a.createElement('script');s.async=1;s.src='https://cdn.talkjs.com/talk.js';
-  a.head.appendChild(s);k=t.Promise;
-  t.Talk={v:3,ready:{then:function(f){if(k)return new k(function(r,e){l.push([f,r,e])});l.push([f])}}};
-})(window,document,[]);
+(function(t,a,l){
+  const s=a.createElement('script');
+  s.async=1;
+  s.src='https://cdn.talkjs.com/talk.js';
+  a.head.appendChild(s);
+  t.Talk={ready:{then:f=>s.onload=f}};
+})(window,document);
 </script>
 
 <script>
-/* ============================
-   LOCAL DATABASE
-============================ */
+/* =====================
+   DATABASE + SESSION
+===================== */
+const SELLER = { username:"Kirby", password:"Kirby", role:"seller" };
 let usersDB = JSON.parse(localStorage.getItem("usersDB") || "{}");
-let currentUser = null;
+let currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+let talkSession = null;
 
-const SELLER = {
-  username: "Kirby",
-  password: "Kirby",
-  role: "seller"
+/* =====================
+   AUTO LOGIN ON REFRESH
+===================== */
+window.onload = () => {
+  if (!currentUser) return;
+
+  if (currentUser.role === "seller") {
+    showSellerInbox();
+  } else {
+    showShop();
+  }
 };
 
-/* ============================
+/* =====================
    LOGIN / SIGNUP
-============================ */
-document.getElementById("loginForm").onsubmit = function(e) {
+===================== */
+loginForm.onsubmit = e => {
   e.preventDefault();
 
-  const username = document.getElementById("username").value;
+  const username = usernameInput.value = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
   // Seller login
   if (username === SELLER.username && password === SELLER.password) {
     currentUser = SELLER;
+    localStorage.setItem("currentUser", JSON.stringify(currentUser));
     showSellerInbox();
     return;
   }
 
   // Buyer signup
   if (!usersDB[username]) {
-    usersDB[username] = { password, role: "buyer" };
+    usersDB[username] = { password, role:"buyer" };
     localStorage.setItem("usersDB", JSON.stringify(usersDB));
   }
 
-  // Buyer login check
   if (usersDB[username].password !== password) {
     alert("Wrong password");
     return;
   }
 
-  currentUser = { username, role: "buyer" };
+  currentUser = { username, role:"buyer" };
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
   showShop();
 };
 
-/* ============================
+/* =====================
    UI NAV
-============================ */
+===================== */
 function showShop() {
   loginForm.style.display = "none";
   shopPage.style.display = "block";
+  itemPage.style.display = "none";
 }
 
 function openItem() {
@@ -166,9 +179,23 @@ function openItem() {
   itemPage.style.display = "block";
 }
 
-/* ============================
-   CHAT (BUYER → SELLER DM)
-============================ */
+/* =====================
+   TALKJS CLEAN SESSION
+===================== */
+function createSession(meUser) {
+  if (talkSession) talkSession.destroy();
+
+  talkSession = new Talk.Session({
+    appId: "tbR8alHz",
+    me: meUser
+  });
+
+  return talkSession;
+}
+
+/* =====================
+   BUYER CHAT (DM)
+===================== */
 function openChat() {
   Talk.ready.then(() => {
     const me = new Talk.User({
@@ -181,15 +208,10 @@ function openChat() {
       name: "Kirby"
     });
 
-    const session = new Talk.Session({
-      appId: "tbR8alHz",
-      me
-    });
+    const session = createSession(me);
+    const convoId = "garma_" + currentUser.username;
 
-    // 🔒 UNIQUE DM PER BUYER
-    const conversationId = "garma_" + currentUser.username;
-
-    const convo = session.getOrCreateConversation(conversationId);
+    const convo = session.getOrCreateConversation(convoId);
     convo.setParticipant(me);
     convo.setParticipant(seller);
 
@@ -198,11 +220,12 @@ function openChat() {
   });
 }
 
-/* ============================
+/* =====================
    SELLER INBOX
-============================ */
+===================== */
 function showSellerInbox() {
   loginForm.style.display = "none";
+  shopPage.style.display = "none";
   itemPage.style.display = "block";
 
   Talk.ready.then(() => {
@@ -211,10 +234,7 @@ function showSellerInbox() {
       name: "Kirby"
     });
 
-    const session = new Talk.Session({
-      appId: "tbR8alHz",
-      me: seller
-    });
+    const session = createSession(seller);
 
     session.createInbox()
       .mount(document.getElementById("talkjs-container"));
