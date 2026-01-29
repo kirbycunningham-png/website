@@ -38,7 +38,6 @@
 
   <script>
     Talk.ready.then(function() {
-
       const me = new Talk.User({
         id: "default_one",
         name: "default one",
@@ -54,7 +53,7 @@
       });
 
       const session = new Talk.Session({
-        appId: "t4meYSiB",
+        appId: "tBerbkJl",
         me: me
       });
 
@@ -75,7 +74,6 @@
           inbox.mount(container);
           inboxMounted = true;
         } else {
-          // If already mounted, select conversation
           session.createInbox({ selected: conversation }).select(conversation);
         }
       }
