@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -53,7 +53,6 @@ button.logout{background:#333;color:#fff;}
 </div>
 
 <script>
-// seller account
 const SELLER={username:"Kirby",password:"Kirby",role:"seller"};
 let currentUser=null;
 let session=null;
@@ -68,17 +67,19 @@ function login(){
   const u=document.getElementById('user').value.trim();
   const p=document.getElementById('pass').value.trim();
   if(!u||!p){alert("Enter username and password");return;}
-  if(u==="Kirby"&&p==="Kirby") currentUser=SELLER;
+
+  if(u==="Kirby" && p==="Kirby") currentUser=SELLER;
   else currentUser={username:u,password:p,role:"buyer"};
+
   localStorage.setItem("user",JSON.stringify(currentUser));
-  startShop();
+  showShop();
 }
 
-function startShop(){
+function showShop(){
   currentUser=JSON.parse(localStorage.getItem("user"));
   if(!currentUser) return;
 
-  // hide login
+  // Hide login, show shop
   document.getElementById("loginPage").classList.add("hidden");
   document.getElementById("shopPage").classList.remove("hidden");
   document.getElementById("welcomeText").innerText="Welcome, "+currentUser.username;
@@ -86,23 +87,23 @@ function startShop(){
   const shopContainer=document.getElementById("shopContent");
   shopContainer.innerHTML="<h3>Shop Products</h3>";
 
-  // only show shop for buyers
   if(currentUser.role==="buyer"){
     products.forEach(p=>{
       const div=document.createElement("div");
       div.className="shop-card";
-      div.innerHTML=`<h3>${p.name}</h3><div class="price">$${p.price.toFixed(2)}</div>
-      <button onclick="openChat()">Open Chat</button>`;
+      div.innerHTML=`<h3>${p.name}</h3>
+        <div class="price">$${p.price.toFixed(2)}</div>
+        <button onclick="openChat()">Open Chat</button>`;
       shopContainer.appendChild(div);
     });
   } else {
     shopContainer.innerHTML="<h3>Seller Inbox</h3>";
   }
 
-  // init TalkJS
+  // Initialize TalkJS session
   Talk.ready.then(()=>{
     session=new Talk.Session({
-      appId:"tUlq8yXw",
+      appId:"tUlq8yXw", // YOUR APP KEY
       me:new Talk.User({
         id:currentUser.role+"_"+currentUser.username,
         name:currentUser.username
@@ -110,26 +111,25 @@ function startShop(){
     });
 
     if(currentUser.role==="seller"){
+      // Seller sees inbox
       const inbox=session.createInbox();
       inbox.mount(document.getElementById("chat"));
     }
   }).catch(e=>{
-    console.error("TalkJS error:",e);
-    alert("TalkJS failed to load. Make sure you run this on a server, not file:///");
+    console.error("TalkJS failed:",e);
+    alert("TalkJS failed to load. Must run on localhost or live server.");
   });
 }
 
+// Buyers open 1-on-1 chat with seller
 function openChat(){
-  if(currentUser.role==="seller") return; // buyers only
-
+  if(currentUser.role==="seller") return;
   const buyer=new Talk.User({id:"buyer_"+currentUser.username,name:currentUser.username});
   const seller=new Talk.User({id:"seller_Kirby",name:"Kirby"});
-
   const convo=session.getOrCreateConversation(Talk.oneOnOneId(buyer,seller));
   convo.setParticipant(buyer);
   convo.setParticipant(seller);
-
-  const chatbox=session.createChatbox(convo,{showChatHeader:false});
+  const chatbox=session.createChatbox(convo,{showChatHeader:true});
   chatbox.mount(document.getElementById("chat"));
 }
 
@@ -138,8 +138,8 @@ function logout(){
   location.reload();
 }
 
-// auto-start if already logged in
-startShop();
+// Auto-show shop if already logged in
+if(localStorage.getItem("user")) showShop();
 </script>
 
 </body>
