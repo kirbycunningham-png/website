@@ -2,38 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Marketplace Chat</title>
+<title>TalkJS Working Test</title>
 
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    margin: 0;
-    padding: 0;
-}
-
-header {
-    background: #1e88e5;
-    color: white;
-    padding: 15px;
-    text-align: center;
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
 }
 
 #talkjs-container {
-    width: 100%;
-    height: calc(100vh - 60px);
+  width: 100%;
+  height: 100vh;
 }
 </style>
 </head>
 <body>
 
-<header>
-    Chat with Seller
-</header>
-
 <div id="talkjs-container"></div>
 
-<!-- TalkJS Script -->
+<!-- TalkJS Loader -->
 <script>
 (function(t,a,l,k,j,s){
   s=a.createElement('script');s.async=1;s.src='https://cdn.talkjs.com/talk.js';
@@ -45,51 +34,27 @@ header {
 <script>
 Talk.ready.then(function () {
 
-    /* BUYER USER */
-    const buyer = new Talk.User({
-        id: "buyer_001",
-        name: "Buyer",
-        email: "buyer@example.com",
-        role: "buyer",
-        photoUrl: "https://i.pravatar.cc/150?img=3"
-    });
+  const buyer = new Talk.User({
+    id: "buyer_1",
+    name: "Buyer"
+  });
 
-    /* SELLER USER */
-    const seller = new Talk.User({
-        id: "seller_001",
-        name: "ProSeller99",
-        email: "seller@example.com",
-        role: "seller",
-        photoUrl: "https://i.pravatar.cc/150?img=8"
-    });
+  const seller = new Talk.User({
+    id: "seller_1",
+    name: "Seller"
+  });
 
-    /* TALKJS SESSION */
-    const session = new Talk.Session({
-        appId: "YOUR_APP_ID_HERE",
-        me: buyer
-    });
+  const session = new Talk.Session({
+    appId: "tbR8alHz",
+    me: buyer
+  });
 
-    /* CONVERSATION (1 ORDER = 1 CHAT) */
-    const conversationId = "order_12345";
-    const conversation = session.getOrCreateConversation(conversationId);
+  const conversation = session.getOrCreateConversation("conversation_test_1");
+  conversation.setParticipant(buyer);
+  conversation.setParticipant(seller);
 
-    conversation.setParticipant(buyer);
-    conversation.setParticipant(seller);
-
-    conversation.setAttributes({
-        subject: "Valorant Account Purchase",
-        custom: {
-            price: "$120",
-            game: "Valorant"
-        }
-    });
-
-    /* CHAT UI */
-    const inbox = session.createInbox({
-        selected: conversation
-    });
-
-    inbox.mount(document.getElementById("talkjs-container"));
+  const inbox = session.createInbox({ selected: conversation });
+  inbox.mount(document.getElementById("talkjs-container"));
 
 });
 </script>
