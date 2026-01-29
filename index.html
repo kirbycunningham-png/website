@@ -147,23 +147,21 @@ function logout(){
   document.getElementById('loginSignupForm').style.display='block';
 }
 
-// --- TalkJS Chat using Sandbox App ID ---
+// --- TalkJS Chat (Popup Mode) ---
 function openChat(){
   if(!currentUser) return alert('Select a user first');
 
-  Talk.ready.then(()=>{
-    const me = new Talk.User({ id: currentUser.username, name: currentUser.username });
-    const seller = new Talk.User({ id:'Kirby', name:'Kirby' });
+  // Directly trigger popup from click
+  const me = new Talk.User({ id: currentUser.username, name: currentUser.username });
+  const seller = new Talk.User({ id:'Kirby', name:'Kirby' });
 
-    // SANDBOX App ID works on ANY domain
-    const session = new Talk.Session({ appId:'tB1r7mJ6', me:me });
-    const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me, seller));
-    conversation.setParticipant(me);
-    conversation.setParticipant(seller);
+  const session = new Talk.Session({ appId:'tB1r7mJ6', me:me }); // Sandbox App ID works anywhere
+  const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me, seller));
+  conversation.setParticipant(me);
+  conversation.setParticipant(seller);
 
-    // Popup mode works on mobile and desktop
-    session.createPopup({selected:conversation}).open();
-  });
+  // Popup opens immediately
+  session.createPopup({selected:conversation}).open();
 }
 </script>
 
