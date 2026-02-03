@@ -4,13 +4,11 @@
 <meta charset="UTF-8">
 <title>ElDorado Marketplace</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdn.talkjs.com/talk.js"></script>
 <style>
-/* ===== GLOBAL ===== */
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #0f1115, #1a1c25);
+    background: linear-gradient(135deg,#0f1115,#1a1c25);
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -18,8 +16,6 @@ body {
     min-height: 100vh;
     padding: 20px;
 }
-
-/* ===== HEADER ===== */
 header {
     width: 100%;
     max-width: 1200px;
@@ -50,29 +46,23 @@ header .user-info button {
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
-    transition: 0.3s;
 }
 header .user-info button:hover {
     opacity: 0.85;
 }
-
-/* ===== PRODUCT GRID ===== */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
     gap: 30px;
     width: 100%;
     max-width: 1200px;
 }
-
-/* ===== PRODUCT CARD ===== */
 .product {
     background: #1c1e2a;
     border-radius: 20px;
     padding: 25px;
     text-align: center;
     transition: transform 0.3s, box-shadow 0.3s;
-    position: relative;
 }
 .product:hover {
     transform: translateY(-5px);
@@ -96,7 +86,6 @@ header .user-info button:hover {
     border-radius: 12px;
     cursor: pointer;
     font-weight: bold;
-    transition: 0.3s;
 }
 .product button:hover {
     opacity: 0.85;
@@ -132,37 +121,37 @@ header .user-info button:hover {
 </div>
 
 <script>
-// ===== LOGIN STATUS =====
+// ===== USER LOGIN STATUS =====
 const username = localStorage.getItem("username");
 const userEmail = localStorage.getItem("userEmail");
 const usernameDisplay = document.getElementById("usernameDisplay");
 const logoutBtn = document.getElementById("logoutBtn");
 
-if (username) {
+if(username){
     usernameDisplay.textContent = username;
     logoutBtn.style.display = "inline-block";
 } else {
     usernameDisplay.textContent = "Guest";
 }
 
-// ===== LOGOUT BUTTON =====
-logoutBtn.addEventListener("click", () => {
+// ===== LOGOUT =====
+logoutBtn.addEventListener("click", ()=>{
     localStorage.removeItem("username");
     localStorage.removeItem("userEmail");
     window.location.reload();
 });
 
-// ===== BUY BUTTONS =====
-document.querySelectorAll(".buyBtn").forEach(button => {
-    button.addEventListener("click", () => {
-        if (!username) {
-            // Not logged in → redirect to login
+// ===== BUY BUTTON =====
+document.querySelectorAll(".buyBtn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+        if(!username){
+            // Not logged in → login page
             window.location.href = "https://kirbycunningham-png.github.io/website/login";
             return;
         }
-        // Logged in → go to purchase page
-        const name = button.dataset.name;
-        const price = button.dataset.price;
+        // Logged in → purchase page
+        const name = btn.dataset.name;
+        const price = btn.dataset.price;
         window.location.href = `https://kirbycunningham-png.github.io/website/purchase?name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
     });
 });
