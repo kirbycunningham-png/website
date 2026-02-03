@@ -2,60 +2,64 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Purchase - ElDorado</title>
+<title>Purchase - ElDorado Marketplace</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.talkjs.com/talk.js"></script>
 <style>
-body{
-    margin:0;
-    font-family:'Segoe UI',sans-serif;
-    background:linear-gradient(135deg,#0f1115,#1a1c25);
-    color:#fff;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:20px;
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#0f1115,#1a1c25);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
 }
-h1,h2{text-align:center;color:#00ff9c;}
-h1{font-size:2.5em;margin-bottom:10px;}
-h2{font-size:1.8em;margin-bottom:30px;}
-.purchase-container{
-    display:flex;
-    flex-wrap:wrap;
-    gap:40px;
-    width:100%;
-    max-width:1200px;
-    justify-content:center;
+h1, h2 {
+    text-align: center;
+    color: #00ff9c;
 }
-.left-panel, .right-panel{
-    background:#1c1e2a;
-    border-radius:20px;
-    padding:25px;
+h1 { font-size: 2.5em; margin-bottom: 10px; }
+h2 { font-size: 1.8em; margin-bottom: 30px; }
+.purchase-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    width: 100%;
+    max-width: 1200px;
+    justify-content: center;
 }
-.left-panel{
-    flex:1 1 250px;
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-    min-width:250px;
+.left-panel, .right-panel {
+    background: #1c1e2a;
+    border-radius: 20px;
+    padding: 25px;
 }
-.left-panel button{
-    padding:15px;
-    border:none;
-    border-radius:12px;
-    font-weight:bold;
-    cursor:pointer;
-    background:#00c244;
-    color:white;
+.left-panel {
+    flex: 1 1 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 250px;
 }
-.left-panel button:hover{opacity:0.85;}
-.right-panel{
-    flex:2 1 500px;
-    min-width:400px;
-    height:650px;
-    border-radius:20px;
-    background:#1c1e2a;
-    overflow:hidden;
+.left-panel button {
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #00c244;
+    color: white;
+    transition: 0.3s;
+}
+.left-panel button:hover { opacity: 0.85; }
+.right-panel {
+    flex: 2 1 500px;
+    min-width: 400px;
+    height: 650px;
+    border-radius: 20px;
+    background: #1c1e2a;
+    overflow: hidden;
 }
 </style>
 </head>
@@ -73,47 +77,58 @@ h2{font-size:1.8em;margin-bottom:30px;}
 </div>
 
 <script>
+// ===== Product info from URL =====
 const urlParams = new URLSearchParams(window.location.search);
 const productName = urlParams.get("name") || "Unknown Product";
 const productPrice = urlParams.get("price") || "$0.00";
+
 document.getElementById("itemName").textContent = productName;
 document.getElementById("itemPrice").textContent = productPrice;
 
-// CashApp
+// ===== CashApp button =====
 document.getElementById("cashappBtn").addEventListener("click", ()=>{
     window.location.href = "https://cash.app/$durgot";
 });
 
-// TalkJS Chat
+// ===== TalkJS Chat =====
 const talkjsAppId = "tRkW5nYP";
 const username = localStorage.getItem("username");
 const userEmail = localStorage.getItem("userEmail");
 
 document.getElementById("chatBtn").addEventListener("click", async ()=>{
     if(!username){
+        // Not logged in → go signup
         window.location.href = "https://kirbycunningham-png.github.io/website/signup";
         return;
     }
 
     await Talk.ready;
 
+    // Unique buyer ID per account
+    const buyerId = "buyer_" + userEmail;
+
     const me = new Talk.User({
-        id: "buyer_"+userEmail,
+        id: buyerId,
         name: username,
         email: userEmail,
-        photoUrl:`https://ui-avatars.com/api/?name=${username.charAt(0)}&background=00ff9c&color=000`
+        photoUrl: `https://ui-avatars.com/api/?name=${username.charAt(0)}&background=00ff9c&color=000`
     });
 
     const seller = new Talk.User({
-        id:"seller",
-        name:"ElDorado Seller",
-        email:"seller@example.com",
-        photoUrl:"https://i.imgur.com/0F9Z4.png"
+        id: "seller",
+        name: "ElDorado Seller",
+        email: "seller@example.com",
+        photoUrl: "https://i.imgur.com/0F9Z4.png"
     });
 
-    const session = new Talk.Session({appId:talkjsAppId,me:me,notify:false});
+    const session = new Talk.Session({
+        appId: talkjsAppId,
+        me: me,
+        notify: false
+    });
 
-    const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me,seller));
+    // Unique conversation per buyer → no shared messages
+    const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me, seller));
     conversation.setParticipant(me);
     conversation.setParticipant(seller);
 
