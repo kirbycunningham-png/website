@@ -43,6 +43,11 @@ button:hover{opacity:0.85;}
 #logoutBtn{
     background:#ff4444;
     color:#fff;
+    margin-bottom:10px;
+}
+#clearBtn{
+    background:#00aaff;
+    color:#fff;
     margin-bottom:20px;
 }
 #inboxContainer{
@@ -68,22 +73,25 @@ button:hover{opacity:0.85;}
 <div class="dashboard-container" id="dashboardPage" style="display:none;">
 <h1>Admin Dashboard - Seller</h1>
 <button id="logoutBtn">Logout</button>
+<button id="clearBtn">Clear Inbox</button>
 <div id="inboxContainer"></div>
 </div>
 
 <script>
-const adminEmail = "cunninghamkirbycun@gmail.com";  // your admin email
-const adminPass = "kirbycunningham#10";            // your admin password
+const adminEmail = "cunninghamkirbycun@gmail.com";
+const adminPass = "kirbycunningham#10";
 
 const loginPage = document.getElementById("loginPage");
 const dashboardPage = document.getElementById("dashboardPage");
 const loginBtn = document.getElementById("loginBtn");
 const loginError = document.getElementById("loginError");
 const logoutBtn = document.getElementById("logoutBtn");
+const clearBtn = document.getElementById("clearBtn");
 const inboxContainer = document.getElementById("inboxContainer");
 
 const talkjsAppId = "tRkW5nYP";
 let session;
+let inbox;
 
 loginBtn.addEventListener("click", async () => {
     const email = document.getElementById("adminEmail").value;
@@ -97,7 +105,7 @@ loginBtn.addEventListener("click", async () => {
 
         // Admin logs in as the seller
         const me = new Talk.User({
-            id: "seller",                    // This is the TalkJS seller ID
+            id: "seller",
             name: "Seller",
             email: adminEmail,
             photoUrl: "https://i.imgur.com/0F9Z4.png"
@@ -110,7 +118,7 @@ loginBtn.addEventListener("click", async () => {
         });
 
         // Show inbox with all buyer conversations
-        const inbox = session.createInbox({ selected: null });
+        inbox = session.createInbox({ selected: null });
         inbox.mount(inboxContainer);
 
     } else {
@@ -122,6 +130,11 @@ logoutBtn.addEventListener("click", ()=>{
     dashboardPage.style.display="none";
     loginPage.style.display="block";
     inboxContainer.innerHTML="";
+});
+
+// Clear inbox temporarily
+clearBtn.addEventListener("click", ()=>{
+    inboxContainer.innerHTML = "";
 });
 </script>
 
