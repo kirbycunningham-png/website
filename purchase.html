@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Purchase - ElDorado Marketplace</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.talkjs.com/talk.js"></script>
+<style>
+/* ===== BODY ===== */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #0f1115;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* ===== PRODUCT INFO ===== */
+.product-info {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.product-info h1 {
+    font-size: 2em;
+    color: #00ff9c;
+}
+.product-info h2 {
+    font-size: 1.5em;
+    color: #00ff9c;
+    margin-top: 10px;
+}
+
+/* ===== MAIN CONTAINER ===== */
+.purchase-container {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* ===== LEFT BUTTON PANEL ===== */
+.button-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 200px;
+}
+.button-panel button {
+    width: 100%;
+    padding: 15px 0;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: none;
+}
+.button-panel .cashapp {
+    background: #00c244;
+    color: #fff;
+}
+.button-panel .chat {
+    background: #00aaff;
+    color: #fff;
+}
+.button-panel button:hover {
+    opacity: 0.85;
+}
+
+/* ===== RIGHT CHAT BOX ===== */
+#chatContainer {
+    flex: 1;
+    height: 650px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: transparent; /* removed gray box */
+}
+
+/* ===== REMOVE TalkJS MENUS & NOTIFICATIONS ===== */
+#chatContainer .talkjs-container-header,
+#chatContainer .talkjs-container-menu,
+#chatContainer .talkjs-container-notification {
+    display: none !important;
+}
+</style>
+</head>
+<body>
+
+<!-- PRODUCT INFO -->
+<div class="product-info">
+    <h1 id="itemName">Loading Product...</h1>
+    <h2 id="itemPrice">$0.00</h2>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="purchase-container">
+    <!-- LEFT BUTTONS -->
+    <div class="button-panel">
+        <button class="cashapp" id="cashappBtn">Pay with CashApp</button>
+        <button class="chat" id="chatBtn">Chat with Seller</button>
+    </div>
+
+    <!-- RIGHT CHAT -->
+    <div id="chatContainer"></div>
+</div>
+
+<script>
+// ===== DYNAMIC PRODUCT =====
+const urlParams = new URLSearchParams(window.location.search);
+const productName = urlParams.get("name") || "Unknown Product";
+const productPrice = urlParams.get("price") || "$0.00";
+
+document.getElementById("itemName").textContent = productName;
+document.getElementById("itemPrice").textContent = productPrice;
+
+// ===== CASHAPP BUTTON =====
+document.getElementById("cashappBtn").addEventListener("click", () => {
+    window.location.href = "https://cash.app/$YOURCASHAPPUSERNAME"; // Replace with your CashApp link
+});
+
+// ===== TALKJS CHAT =====
+const talkjsAppId = "tRkW5nYP"; // Your TalkJS App ID
+
+document.getElementById("chatBtn").addEventListener("click", async () => {
+    await Talk.ready;
+
+    const buyerName = localStorage.getItem("username") || "Guest";
+    const buyerEmail = localStorage.getItem("userEmail") || "guest@example.com";
+
+    const me = new Talk.User({
+        id: "buyer_" + buyerEmail,
+        name: buyerName,
+        email: buyerEmail,
+        photoUrl: "https://i.imgur.com/0F9Z4.png"
+    });
+
+    const seller = new Talk.User({
+        id: "seller",
+        name: "ElDorado Seller",
+        email: "seller@example.com",
+        photoUrl: "https://i.imgur.com/0F9Z4.png"
+    });
+
+    const session = new Talk.Session({
+        appId: talkjsAppId,
+        me: me,
+        notify: false // disables browser notifications
+    });
+
+    const conversationId = Talk.oneOnOneId(me, seller);
+    const conversation = session.getOrCreateConversation(conversationId);
+    conversation.setParticipant(me);
+    conversation.setParticipant(seller);
+
+    // Embedded chatbox fills container cleanly
+    session.createInbox({ selected: conversation }).mount(document.getElementById("chatContainer"));
+});
+</script>
+
+</body>
+</html>
