@@ -2,44 +2,101 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sign Up - ElDorado</title>
+<title>Sign Up - ElDorado Marketplace</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { margin:0; font-family:Arial; background:#0f1115; color:white; display:flex; justify-content:center; align-items:center; min-height:100vh; }
-.container { background:#151820; padding:30px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.6); width:320px; }
-h2 { text-align:center; margin-bottom:20px; color:#00ff9c; }
-input { width:100%; padding:10px; margin:10px 0; border:none; border-radius:5px; }
-button { width:100%; padding:10px; margin-top:15px; border:none; border-radius:5px; font-weight:bold; cursor:pointer; }
-button:hover { opacity:0.85; }
-a { color:#00ff9c; text-decoration:none; }
+body {
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#0f1115,#1a1c25);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.signup-container {
+    background: #1c1e2a;
+    padding: 40px;
+    border-radius: 20px;
+    width: 350px;
+    box-shadow: 0 0 30px #00ff9c;
+}
+h1 { text-align: center; color: #00ff9c; margin-bottom: 20px; }
+input { 
+    width: 100%; 
+    padding: 12px; 
+    margin-bottom: 15px; 
+    border-radius: 8px; 
+    border: none; 
+    background: #272934; 
+    color: #fff;
+}
+button {
+    width: 100%;
+    padding: 12px;
+    background: #00ff9c;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #000;
+    transition: 0.3s;
+}
+button:hover { opacity: 0.85; }
+p { text-align: center; margin-top: 15px; }
+p a { color: #00ff9c; text-decoration: none; font-weight: bold; }
 </style>
 </head>
 <body>
-<div class="container">
-    <h2>Sign Up</h2>
-    <input type="text" id="signupUsername" placeholder="Username" required>
-    <input type="email" id="signupEmail" placeholder="Email" required>
-    <input type="password" id="signupPassword" placeholder="Password" required>
-    <button id="signupBtn">Create Account</button>
-    <p style="text-align:center; margin-top:10px; font-size:14px;">
-        Already have an account? <a href="https://kirbycunningham-png.github.io/website/login">Login</a>
-    </p>
+
+<div class="signup-container">
+<h1>Sign Up</h1>
+<input type="text" id="username" placeholder="Username" />
+<input type="email" id="email" placeholder="Email" />
+<button id="signupBtn">Create Account</button>
+<p>Already have an account? <a href="login.html">Login</a></p>
 </div>
 
 <script>
-// SIGNUP
-document.getElementById("signupBtn").addEventListener("click", () => {
-    const username = document.getElementById("signupUsername").value;
-    const email = document.getElementById("signupEmail").value;
-    const password = document.getElementById("signupPassword").value;
+document.getElementById("signupBtn").addEventListener("click", ()=>{
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim().toLowerCase();
 
+    if(!username || !email){
+        alert("Please fill out all fields.");
+        return;
+    }
+
+    // Get existing users
+    let users = JSON.parse(localStorage.getItem("users") || "{}");
+
+    // Check username or email
+    for(let key in users){
+        if(key.toLowerCase() === username.toLowerCase()){
+            alert("Username already taken.");
+            return;
+        }
+        if(users[key].email === email){
+            alert("Email already registered.");
+            return;
+        }
+    }
+
+    // Create unique TalkJS ID
+    const userId = "buyer_" + username + "_" + Date.now();
+
+    // Save user
+    users[username] = { email: email, id: userId };
+    localStorage.setItem("users", JSON.stringify(users));
     localStorage.setItem("username", username);
     localStorage.setItem("userEmail", email);
-    localStorage.setItem("userPassword", password);
+    localStorage.setItem("userId", userId);
 
-    alert("Account created! You can now use the marketplace.");
-    window.location.href = "https://kirbycunningham-png.github.io/website/"; // Go back to marketplace
+    // Redirect to marketplace
+    window.location.href = "index.html";
 });
 </script>
+
 </body>
 </html>
