@@ -1,99 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>TalkJS Chat</title>
+    <meta charset="UTF-8">
+    <title>Marketplace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- TalkJS -->
-<script>
-(function(t,a,l,k,j,s){
-  s=a.createElement('script');s.async=1;s.src="https://cdn.talkjs.com/talk.js";
-  a.head.appendChild(s);k=t.Promise;
-  t.Talk={v:3,ready:{then:function(f){if(k)return new k(function(r,e){l.push([f,r,e])});l.push([f])},catch:function(){return k&&new k()},c:l}};
-})(window,document,[]);
-</script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f1115;
+            color: #ffffff;
+        }
 
-<style>
-html, body {
-  margin: 0;
-  height: 100%;
-  background: #ff7a00; /* ORANGE WEBSITE */
-  font-family: Arial, sans-serif;
-}
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: #151820;
+            border-bottom: 1px solid #222;
+        }
 
-/* Chat box */
-#talkjs-container {
-  width: 420px;
-  height: 540px;
-  margin: 40px auto;
-  background: #000; /* BLACK CHAT */
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0,0,0,.4);
-}
+        header h1 {
+            font-size: 20px;
+            color: #00ff9c;
+        }
 
-/* Kill TalkJS header */
-.talkjs-header {
-  display: none !important;
-}
+        .user {
+            font-size: 14px;
+            color: #ccc;
+        }
 
-/* Hide avatars + names */
-.talkjs-message-author,
-.talkjs-message-avatar {
-  display: none !important;
-}
+        /* MARKET */
+        .market {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
 
-/* Message bubbles */
-.talkjs-message {
-  background: #111 !important;
-  color: #fff !important;
-  border-radius: 12px !important;
-}
+        .item {
+            background: #151820;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
+            transition: transform 0.2s;
+        }
 
-/* Outgoing messages */
-.talkjs-message.me {
-  background: #1f1f1f !important;
-}
-</style>
+        .item:hover {
+            transform: translateY(-5px);
+        }
+
+        .item h3 {
+            margin: 0 0 10px;
+            font-size: 16px;
+        }
+
+        .price {
+            color: #00ff9c;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .item button {
+            width: 100%;
+            padding: 8px;
+            background: #00ff9c;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .item button:hover {
+            background: #00cc7a;
+        }
+
+        /* LOGOUT */
+        .logout {
+            background: none;
+            border: 1px solid #444;
+            color: #ccc;
+            padding: 6px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .logout:hover {
+            border-color: #ff4d4d;
+            color: #ff4d4d;
+        }
+    </style>
 </head>
-
 <body>
 
-<div id="talkjs-container"></div>
+<header>
+    <h1>ElDorado Market</h1>
+    <div>
+        <span class="user" id="username">Guest</span>
+        <button class="logout" onclick="logout()">Logout</button>
+    </div>
+</header>
+
+<section class="market">
+    <div class="item">
+        <h3>Game Coins Pack</h3>
+        <div class="price">$4.99</div>
+        <button>Buy Now</button>
+    </div>
+
+    <div class="item">
+        <h3>Rare Account</h3>
+        <div class="price">$19.99</div>
+        <button>Buy Now</button>
+    </div>
+
+    <div class="item">
+        <h3>Boosting Service</h3>
+        <div class="price">$9.99</div>
+        <button>Buy Now</button>
+    </div>
+
+    <div class="item">
+        <h3>Exclusive Skin</h3>
+        <div class="price">$2.99</div>
+        <button>Buy Now</button>
+    </div>
+</section>
 
 <script>
-Talk.ready.then(() => {
+    // AUTH CHECK
+    if (localStorage.getItem("loggedIn") !== "true") {
+        window.location.href = "/login";
+    }
 
-  const me = new Talk.User({
-    id: "buyer_1",
-    name: "Me"
-  });
+    // SHOW USER NAME
+    const email = localStorage.getItem("userEmail");
+    if (email) {
+        document.getElementById("username").textContent = email;
+    }
 
-  const seller = new Talk.User({
-    id: "seller_1",
-    name: "Seller"
-  });
-
-  const session = new Talk.Session({
-    appId: "tRkW5nYP",
-    me
-  });
-
-  const conversation = session.getOrCreateConversation(
-    Talk.oneOnOneId(me, seller)
-  );
-
-  conversation.setParticipant(me);
-  conversation.setParticipant(seller);
-
-  const inbox = session.createInbox({
-    selected: conversation,
-    showConversationList: false,
-    showHeader: false
-  });
-
-  inbox.mount(document.getElementById("talkjs-container"));
-});
+    // LOGOUT
+    function logout() {
+        localStorage.removeItem("loggedIn");
+        window.location.href = "/login";
+    }
 </script>
 
 </body>
