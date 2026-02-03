@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard - ElDorado</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.talkjs.com/talk.js"></script>
+<style>
+body {
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#0f1115,#1a1c25);
+    color:#fff;
+    min-height:100vh;
+    padding:20px;
+}
+h1,h2{color:#00ff9c;margin:0 0 20px 0;text-align:center;}
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+button:hover{opacity:0.85;}
+.login-container, .dashboard-container{
+    max-width:400px;
+    margin:auto;
+    background:#1c1e2a;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 0 20px #00ff9c;
+}
+nav{display:flex;gap:20px;margin-bottom:20px;justify-content:center;}
+nav button{background:#00aaff;color:#fff;}
+#userList{max-height:400px;overflow-y:auto;}
+.userItem{
+    background:#272a3b;
+    margin-bottom:10px;
+    padding:10px;
+    border-radius:10px;
+    cursor:pointer;
+}
+#chatContainer{
+    width:100%;
+    height:500px;
+    border-radius:12px;
+    overflow:hidden;
+    display:none;
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div class="login-container" id="loginPage">
+<h1>Admin Login</h1>
+<input type="email" id="adminEmail" placeholder="Email" style="width:100%;padding:10px;margin:10px 0;border-radius:10px;border:none;">
+<input type="password" id="adminPass" placeholder="Password" style="width:100%;padding:10px;margin:10px 0;border-radius:10px;border:none;">
+<button id="loginBtn">Login</button>
+<p id="loginError" style="color:red;text-align:center;margin-top:10px;"></p>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard-container" id="dashboardPage" style="display:none;">
+<h1>Admin Dashboard</h1>
+<nav>
+<button id="marketBtn">Marketplace</button>
+<button id="messagesBtn">Messages</button>
+<button id="logoutBtn">Logout</button>
+</nav>
+<div id="contentArea">
+<p>Select Messages to view buyer conversations.</p>
+</div>
+<div id="chatContainer"></div>
+</div>
+
+<script>
+// ===== Admin Credentials =====
+const adminEmail = "cunninghamkirbycun@gmail.com";
+const adminPass = "kirbycunningham#10";
+
+// ===== Elements =====
+const loginPage = document.getElementById("loginPage");
+const dashboardPage = document.getElementById("dashboardPage");
+const loginBtn = document.getElementById("loginBtn");
+const loginError = document.getElementById("loginError");
+const marketBtn = document.getElementById("marketBtn");
+const messagesBtn = document.getElementById("messagesBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const contentArea = document.getElementById("contentArea");
+const chatContainer = document.getElementById("chatContainer");
+
+// ===== TalkJS =====
+const talkjsAppId = "tRkW5nYP";
+let session = null;
+
+// ===== Login =====
+loginBtn.addEventListener("click", async () => {
+    const email = document.getElementById("adminEmail").value;
+    const pass = document.getElementById("adminPass").value;
+    if(email === adminEmail && pass === adminPass){
+        loginPage.style.display = "none";
+        dashboardPage.style.display = "block";
+
+        await Talk.ready;
+        const me = new Talk.User({
+            id:"admin",
+            name:"Admin",
+            email:adminEmail,
+            photoUrl:"https://i.imgur.com/0F9Z4.png"
+        });
+        session = new Talk.Session({
+            appId: talkjsAppId,
+            me: me,
+            notify:false
+        });
+
+    } else {
+        loginError.textContent = "Invalid email or password!";
+    }
+});
+
+// ===== Logout =====
+logoutBtn.addEventListener("click", ()=>{
+    dashboardPage.style.display = "none";
+    loginPage.style.display = "block";
+    chatContainer.style.display = "none";
+    contentArea.innerHTML = "<p>Select Messages to view buyer conversations.</p>";
+});
+
+// ===== Marketplace Tab =====
+marketBtn.addEventListener("click", ()=>{
+    chatContainer.style.display = "none";
+    contentArea.innerHTML = "<h2>Marketplace</h2><p>Marketplace content goes here...</p>";
+});
+
+// ===== Messages Tab =====
+messagesBtn.addEventListener("click", async ()=>{
+    contentArea.innerHTML = "<h2>Buyer Conversations</h2><div id='userList'>Loading...</div>";
+    chatContainer.style.display = "none";
+
+    // Get all conversations
+    const convs = await session.getOrCreateConversation("dummy"); // dummy to init session
+    session.getAllConversations().then(allConvs=>{
+        const listDiv = document.getElementById("userList");
+        listDiv.innerHTML = "";
+        allConvs.forEach(conv=>{
+            // Only show conversations that include someone besides admin
+            if(conv.participants && conv.participants.length>1){
+                const user = conv.participants.find(p=>p.id!=="admin");
+                const div = document.createElement("div");
+                div.className="userItem";
+                div.textContent = user.name || user.id;
+                div.onclick = ()=>{
+                    // Open chat with this user
+                    chatContainer.style.display="block";
+                    const chatbox = session.createChatbox(conv);
+                    chatbox.mount(chatContainer);
+                };
+                listDiv.appendChild(div);
+            }
+        });
+        if(listDiv.innerHTML==="") listDiv.innerHTML="<p>No messages yet.</p>";
+    }).catch(e=>{
+        document.getElementById("userList").innerHTML="<p>Unable to load conversations.</p>";
+        console.error(e);
+    });
+});
+</script>
+
+</body>
+</html>
