@@ -1,174 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Marketplace</title>
+<meta charset="UTF-8" />
+<title>Marketplace</title>
 
-  <!-- TalkJS -->
-  <script>
-    (function(t,a,l,k,j,s){
-      s=a.createElement('script');s.async=1;s.src="https://cdn.talkjs.com/talk.js";
-      a.head.appendChild(s);k=t.Promise;
-      t.Talk={v:3,ready:{then:function(f){if(k)return new k(function(r,e){l.push([f,r,e])});l.push([f])},catch:function(){return k&&new k()},c:l}};
-    })(window,document,[]);
-  </script>
+<!-- TalkJS -->
+<script>
+(function(t,a,l,k,j,s){
+  s=a.createElement('script');s.async=1;s.src="https://cdn.talkjs.com/talk.js";
+  a.head.appendChild(s);k=t.Promise;
+  t.Talk={v:3,ready:{then:function(f){if(k)return new k(function(r,e){l.push([f,r,e])});l.push([f])},catch:function(){return k&&new k()},c:l}};
+})(window,document,[]);
+</script>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Inter, Arial, sans-serif;
-      background: #0e0f14;
-      color: #fff;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #0e0f14;
+  color: #fff;
+}
 
-    header {
-      padding: 20px 40px;
-      background: #14151c;
-      border-bottom: 1px solid #222;
-      font-size: 22px;
-      font-weight: bold;
-    }
+/* Marketplace */
+.container {
+  padding: 40px;
+}
 
-    .container {
-      padding: 40px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 24px;
-    }
+.card {
+  width: 280px;
+  background: #14151c;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px #222;
+}
 
-    .card {
-      background: #14151c;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 0 0 1px #222;
-      transition: transform 0.2s;
-    }
+button {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
 
-    .card:hover {
-      transform: translateY(-4px);
-    }
+.buy {
+  background: #5b6cff;
+  color: #fff;
+}
 
-    .card img {
-      width: 100%;
-      border-radius: 6px;
-      margin-bottom: 12px;
-    }
+.chat {
+  margin-top: 10px;
+  background: #1b1d27;
+  color: #5b6cff;
+  display: none;
+}
 
-    .title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
+/* Overlay */
+#chat-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
 
-    .seller {
-      font-size: 13px;
-      color: #aaa;
-      margin-bottom: 12px;
-    }
+/* Chat modal */
+#talkjs-container {
+  width: 420px;
+  height: 540px;
+  background: #0e0f14;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,.8);
+  transform: scale(.9);
+  opacity: 0;
+  transition: all .25s ease;
+}
 
-    .price {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 14px;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    .buy {
-      background: #5b6cff;
-      color: white;
-    }
-
-    .chat {
-      background: #1f2230;
-      color: #5b6cff;
-      margin-top: 10px;
-      display: none;
-    }
-
-    #talkjs-container {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      width: 360px;
-      height: 500px;
-      border-radius: 10px;
-      overflow: hidden;
-      display: none;
-      box-shadow: 0 0 0 1px #222;
-    }
-  </style>
+/* Show animation */
+#chat-overlay.show #talkjs-container {
+  transform: scale(1);
+  opacity: 1;
+}
+</style>
 </head>
-<body>
 
-<header>Marketplace</header>
+<body>
 
 <div class="container">
   <div class="card">
-    <img src="https://picsum.photos/400/200" />
-    <div class="title">Game Account – Level 50</div>
-    <div class="seller">Seller: DarkTrader</div>
-    <div class="price">$25.00</div>
+    <h3>Game Account – Level 50</h3>
+    <p style="color:#aaa">Seller: DarkTrader</p>
+    <strong>$25.00</strong>
+    <br><br>
     <button class="buy">Buy</button>
     <button class="chat">Chat with Seller</button>
   </div>
 </div>
 
-<div id="talkjs-container"></div>
+<!-- Centered Chat -->
+<div id="chat-overlay">
+  <div id="talkjs-container"></div>
+</div>
 
 <script>
-  const buyBtn = document.querySelector(".buy");
-  const chatBtn = document.querySelector(".chat");
-  const chatContainer = document.getElementById("talkjs-container");
+const buyBtn = document.querySelector(".buy");
+const chatBtn = document.querySelector(".chat");
+const overlay = document.getElementById("chat-overlay");
 
-  buyBtn.addEventListener("click", () => {
-    alert("Purchase successful!");
-    chatBtn.style.display = "block";
-    buyBtn.style.display = "none";
-  });
+buyBtn.onclick = () => {
+  chatBtn.style.display = "block";
+  buyBtn.style.display = "none";
+};
 
-  chatBtn.addEventListener("click", () => {
-    chatContainer.style.display = "block";
+chatBtn.onclick = () => {
+  overlay.style.display = "flex";
+  setTimeout(() => overlay.classList.add("show"), 10);
 
-    Talk.ready.then(() => {
-      const buyer = new Talk.User({
-        id: "buyer_1",
-        name: "Buyer",
-        role: "buyer",
-        photoUrl: "https://talkjs.com/images/avatar-1.jpg"
-      });
-
-      const seller = new Talk.User({
-        id: "seller_1",
-        name: "DarkTrader",
-        role: "seller",
-        photoUrl: "https://talkjs.com/images/avatar-5.jpg"
-      });
-
-      const session = new Talk.Session({
-        appId: "tRkW5nYP",
-        me: buyer
-      });
-
-      const conversation = session.getOrCreateConversation(
-        Talk.oneOnOneId(buyer, seller)
-      );
-
-      conversation.setParticipant(buyer);
-      conversation.setParticipant(seller);
-
-      const inbox = session.createInbox({ selected: conversation });
-      inbox.mount(chatContainer);
+  Talk.ready.then(() => {
+    const buyer = new Talk.User({
+      id: "buyer_1",
+      name: "Buyer"
     });
+
+    const seller = new Talk.User({
+      id: "seller_1",
+      name: "DarkTrader"
+    });
+
+    const session = new Talk.Session({
+      appId: "tRkW5nYP",
+      me: buyer
+    });
+
+    const conversation = session.getOrCreateConversation(
+      Talk.oneOnOneId(buyer, seller)
+    );
+
+    conversation.setParticipant(buyer);
+    conversation.setParticipant(seller);
+
+    const inbox = session.createInbox({
+      selected: conversation,
+      showConversationList: false,
+      showHeader: false
+    });
+
+    inbox.mount(document.getElementById("talkjs-container"));
   });
+};
+
+// Close on background click
+overlay.addEventListener("click", e => {
+  if (e.target === overlay) {
+    overlay.classList.remove("show");
+    setTimeout(() => overlay.style.display = "none", 200);
+  }
+});
 </script>
 
 </body>
