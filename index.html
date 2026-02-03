@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <title>ElDorado Marketplace</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.talkjs.com/talk.js"></script>
 <style>
+/* ===== GLOBAL ===== */
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
@@ -28,7 +30,8 @@ header {
 }
 header h1 {
     color: #00ff9c;
-    font-size: 2.2em;
+    font-size: 2.5em;
+    text-shadow: 0 0 10px #00ff9c;
 }
 header .user-info {
     display: flex;
@@ -36,7 +39,7 @@ header .user-info {
     gap: 15px;
 }
 header .user-info span {
-    font-size: 1em;
+    font-size: 1.2em;
     color: #00ff9c;
 }
 header .user-info button {
@@ -56,39 +59,41 @@ header .user-info button:hover {
 /* ===== PRODUCT GRID ===== */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
     width: 100%;
     max-width: 1200px;
 }
 
+/* ===== PRODUCT CARD ===== */
 .product {
     background: #1c1e2a;
-    border-radius: 15px;
+    border-radius: 20px;
     padding: 25px;
     text-align: center;
     transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
 }
 .product:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,255,156,0.3);
+    box-shadow: 0 10px 30px rgba(0,255,156,0.4);
 }
 .product h2 {
     color: #00ff9c;
     margin-bottom: 12px;
-    font-size: 1.5em;
+    font-size: 1.6em;
 }
 .product p {
     color: #fff;
     margin-bottom: 15px;
-    font-size: 1.1em;
+    font-size: 1.2em;
 }
 .product button {
     background: #00c244;
     color: #fff;
     border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
+    padding: 12px 25px;
+    border-radius: 12px;
     cursor: pointer;
     font-weight: bold;
     transition: 0.3s;
@@ -127,7 +132,7 @@ header .user-info button:hover {
 </div>
 
 <script>
-// ===== USER LOGIN STATUS =====
+// ===== LOGIN STATUS =====
 const username = localStorage.getItem("username");
 const userEmail = localStorage.getItem("userEmail");
 const usernameDisplay = document.getElementById("usernameDisplay");
@@ -151,7 +156,7 @@ logoutBtn.addEventListener("click", () => {
 document.querySelectorAll(".buyBtn").forEach(button => {
     button.addEventListener("click", () => {
         if (!username) {
-            // Not logged in → go to login
+            // Not logged in → redirect to login
             window.location.href = "https://kirbycunningham-png.github.io/website/login";
             return;
         }
