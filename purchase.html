@@ -34,7 +34,7 @@ body {
     margin-top: 10px;
 }
 
-/* ===== MAIN CONTAINER ===== */
+/* ===== PURCHASE CONTAINER ===== */
 .purchase-container {
     display: flex;
     flex-direction: row;
@@ -43,7 +43,7 @@ body {
     max-width: 1200px;
 }
 
-/* ===== LEFT BUTTON PANEL ===== */
+/* ===== BUTTON PANEL ===== */
 .button-panel {
     display: flex;
     flex-direction: column;
@@ -73,13 +73,13 @@ body {
     opacity: 0.85;
 }
 
-/* ===== RIGHT CHAT BOX ===== */
+/* ===== CHAT BOX ===== */
 #chatContainer {
     flex: 1;
     height: 650px;
     border-radius: 12px;
     overflow: hidden;
-    background: transparent; /* removed gray box */
+    background: transparent;
 }
 
 /* ===== REMOVE TalkJS MENUS & NOTIFICATIONS ===== */
@@ -98,7 +98,7 @@ body {
     <h2 id="itemPrice">$0.00</h2>
 </div>
 
-<!-- MAIN CONTENT -->
+<!-- PURCHASE CONTAINER -->
 <div class="purchase-container">
     <!-- LEFT BUTTONS -->
     <div class="button-panel">
@@ -106,12 +106,12 @@ body {
         <button class="chat" id="chatBtn">Chat with Seller</button>
     </div>
 
-    <!-- RIGHT CHAT -->
+    <!-- RIGHT CHAT BOX -->
     <div id="chatContainer"></div>
 </div>
 
 <script>
-// ===== DYNAMIC PRODUCT =====
+// ===== DYNAMIC PRODUCT INFO =====
 const urlParams = new URLSearchParams(window.location.search);
 const productName = urlParams.get("name") || "Unknown Product";
 const productPrice = urlParams.get("price") || "$0.00";
@@ -121,11 +121,11 @@ document.getElementById("itemPrice").textContent = productPrice;
 
 // ===== CASHAPP BUTTON =====
 document.getElementById("cashappBtn").addEventListener("click", () => {
-    window.location.href = "https://cash.app/$YOURCASHAPPUSERNAME"; // Replace with your CashApp link
+    window.location.href = "https://cash.app/$durgot"; // Your CashApp link
 });
 
 // ===== TALKJS CHAT =====
-const talkjsAppId = "tRkW5nYP"; // Your TalkJS App ID
+const talkjsAppId = "tRkW5nYP";
 
 document.getElementById("chatBtn").addEventListener("click", async () => {
     await Talk.ready;
@@ -158,7 +158,7 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     conversation.setParticipant(me);
     conversation.setParticipant(seller);
 
-    // Embedded chatbox fills container cleanly
+    // Mount chat cleanly in the right panel
     session.createInbox({ selected: conversation }).mount(document.getElementById("chatContainer"));
 });
 </script>
