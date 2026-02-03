@@ -1,27 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Purchase - ElDorado Marketplace</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.talkjs.com/talk.js"></script>
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f1115, #1a1c25);
+    color: #fff;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+h1, h2 {
+    color: #00ff9c;
+    text-align: center;
+    margin: 0;
+}
+h1 { font-size: 2.5em; margin-bottom: 10px; }
+h2 { font-size: 1.8em; margin-bottom: 30px; }
+
+.purchase-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    width: 100%;
+    max-width: 1200px;
+    justify-content: center;
+}
+
+.left-panel {
+    flex: 1 1 250px;
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.left-panel button {
+    padding: 15px;
+    font-weight: bold;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#cashappBtn {
+    background: #00c244;
+    color: white;
+}
+
+#chatBtn {
+    background: #00aaff;
+    color: white;
+}
+
+.left-panel button:hover { opacity: 0.85; }
+
+.right-panel {
+    flex: 2 1 500px;
+    min-width: 400px;
+    height: 650px;
+    border-radius: 20px;
+    background: #1c1e2a;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#chatContainer {
+    width: 95%;
+    height: 95%;
+    border-radius: 12px;
+    overflow: hidden;
+    display: none; /* hidden by default */
+}
+</style>
+</head>
+<body>
+
+<h1 id="itemName">Loading Product...</h1>
+<h2 id="itemPrice">$0.00</h2>
+
+<div class="purchase-container">
+    <div class="left-panel">
+        <button id="cashappBtn">Pay with CashApp ($durgot)</button>
+        <button id="chatBtn">Open Chat with Seller</button>
+    </div>
+    <div class="right-panel">
+        <div id="chatContainer"></div>
+    </div>
+</div>
+
 <script>
-// ===== Product info from URL =====
+// ===== Dynamic Product Info =====
 const urlParams = new URLSearchParams(window.location.search);
 const productName = urlParams.get("name") || "Unknown Product";
 const productPrice = urlParams.get("price") || "$0.00";
 document.getElementById("itemName").textContent = productName;
 document.getElementById("itemPrice").textContent = productPrice;
 
-// ===== CashApp =====
-document.getElementById("cashappBtn").addEventListener("click",()=>{
+// ===== CashApp Redirect =====
+document.getElementById("cashappBtn").addEventListener("click", () => {
     window.location.href = "https://cash.app/$durgot";
 });
 
 // ===== TalkJS Chat =====
 const talkjsAppId = "tRkW5nYP";
 const username = localStorage.getItem("username");
-const userEmail = localStorage.getItem("userEmail");
 const userId = localStorage.getItem("userId");
 
 let chatBoxInstance = null;
 let chatOpen = false;
 
-document.getElementById("chatBtn").addEventListener("click", async ()=>{
-    if(!username){
+const chatContainer = document.getElementById("chatContainer");
+
+document.getElementById("chatBtn").addEventListener("click", async () => {
+    if (!username) {
         window.location.href = "signup.html";
         return;
     }
@@ -31,44 +133,42 @@ document.getElementById("chatBtn").addEventListener("click", async ()=>{
     const me = new Talk.User({
         id: userId,
         name: username,
-        email: userEmail,
-        photoUrl:`https://ui-avatars.com/api/?name=${username.charAt(0)}&background=00ff9c&color=000`
+        email: "guest@example.com",
+        photoUrl: `https://ui-avatars.com/api/?name=${username.charAt(0)}&background=00ff9c&color=000`
     });
 
     const seller = new Talk.User({
-        id:"seller",
-        name:"ElDorado Seller",
-        email:"seller@example.com",
-        photoUrl:"https://i.imgur.com/0F9Z4.png"
+        id: "seller",
+        name: "ElDorado Seller",
+        email: "seller@example.com",
+        photoUrl: "https://i.imgur.com/0F9Z4.png"
     });
 
     const session = new Talk.Session({
         appId: talkjsAppId,
         me: me,
-        notify:false
+        notify: false
     });
 
-    const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me,seller));
+    const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me, seller));
     conversation.setParticipant(me);
     conversation.setParticipant(seller);
 
-    const chatContainer = document.getElementById("chatContainer");
-
     // Toggle chat open/close
-    if(!chatOpen){
+    if (!chatOpen) {
         chatBoxInstance = session.createChatbox(conversation);
         chatBoxInstance.mount(chatContainer);
-        chatContainer.style.display = "block"; // show chat container
+        chatContainer.style.display = "block";
         document.getElementById("chatBtn").textContent = "Close Chat with Seller";
         chatOpen = true;
     } else {
-        chatBoxInstance.destroy(); // remove chat from DOM
-        chatContainer.style.display = "none"; // hide chat container
+        chatBoxInstance.destroy();
+        chatContainer.style.display = "none";
         document.getElementById("chatBtn").textContent = "Open Chat with Seller";
         chatOpen = false;
     }
 });
-
-// Initially hide chat container
-document.getElementById("chatContainer").style.display = "none";
 </script>
+
+</body>
+</html>
