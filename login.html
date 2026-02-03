@@ -2,50 +2,88 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Login - ElDorado</title>
+<title>Login - ElDorado Marketplace</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { margin:0; font-family:Arial; background:#0f1115; color:white; display:flex; justify-content:center; align-items:center; min-height:100vh; }
-.container { background:#151820; padding:30px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.6); width:320px; }
-h2 { text-align:center; margin-bottom:20px; color:#00ff9c; }
-input { width:100%; padding:10px; margin:10px 0; border:none; border-radius:5px; }
-button { width:100%; padding:10px; margin-top:15px; border:none; border-radius:5px; font-weight:bold; cursor:pointer; }
-button:hover { opacity:0.85; }
-a { color:#00ff9c; text-decoration:none; }
+body {
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#0f1115,#1a1c25);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.login-container {
+    background: #1c1e2a;
+    padding: 40px;
+    border-radius: 20px;
+    width: 350px;
+    box-shadow: 0 0 30px #00ff9c;
+}
+h1 { text-align: center; color: #00ff9c; margin-bottom: 20px; }
+input { 
+    width: 100%; 
+    padding: 12px; 
+    margin-bottom: 15px; 
+    border-radius: 8px; 
+    border: none; 
+    background: #272934; 
+    color: #fff;
+}
+button {
+    width: 100%;
+    padding: 12px;
+    background: #00ff9c;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #000;
+    transition: 0.3s;
+}
+button:hover { opacity: 0.85; }
+p { text-align: center; margin-top: 15px; }
+p a { color: #00ff9c; text-decoration: none; font-weight: bold; }
 </style>
 </head>
 <body>
-<div class="container">
-    <h2>Login</h2>
-    <input type="email" id="loginEmail" placeholder="Email" required>
-    <input type="password" id="loginPassword" placeholder="Password" required>
-    <button id="loginBtn">Login</button>
-    <p style="text-align:center; margin-top:10px; font-size:14px;">
-        Don't have an account? <a href="https://kirbycunningham-png.github.io/website/signup">Sign Up</a>
-    </p>
+
+<div class="login-container">
+<h1>Login</h1>
+<input type="text" id="username" placeholder="Username" />
+<input type="email" id="email" placeholder="Email" />
+<button id="loginBtn">Login</button>
+<p>Don't have an account? <a href="signup.html">Sign Up</a></p>
 </div>
 
 <script>
-// LOGIN
-document.getElementById("loginBtn").addEventListener("click", () => {
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
+document.getElementById("loginBtn").addEventListener("click", ()=>{
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim().toLowerCase();
 
-    const savedEmail = localStorage.getItem("userEmail");
-    const savedPassword = localStorage.getItem("userPassword");
-
-    if (email === savedEmail && password === savedPassword) {
-        localStorage.setItem("loggedIn", "true");
-        window.location.href = "index.html"; // Go to marketplace
-    } else {
-        alert("Invalid login credentials");
+    if(!username || !email){
+        alert("Please fill out all fields.");
+        return;
     }
-});
 
-// Redirect to index if already logged in
-if (localStorage.getItem("loggedIn") === "true") {
+    let users = JSON.parse(localStorage.getItem("users") || "{}");
+
+    if(!users[username] || users[username].email !== email){
+        alert("Invalid username or email.");
+        return;
+    }
+
+    // Save login info
+    localStorage.setItem("username", username);
+    localStorage.setItem("userEmail", email);
+    localStorage.setItem("userId", users[username].id);
+
+    // Redirect to marketplace
     window.location.href = "index.html";
-}
+});
 </script>
+
 </body>
 </html>
