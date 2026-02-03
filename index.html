@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Messages</title>
+<meta charset="UTF-8">
+<title>TalkJS Messages</title>
 
-<!-- TalkJS -->
 <script>
 (function(t,a,l,k,j,s){
   s=a.createElement('script');s.async=1;s.src="https://cdn.talkjs.com/talk.js";
@@ -18,18 +17,34 @@ html, body {
   margin: 0;
   height: 100%;
   background: #ff7a00;
-  font-family: Inter, Arial, sans-serif;
+  font-family: Arial, sans-serif;
 }
 
-/* Chat container */
 #talkjs-container {
   width: 420px;
   height: 540px;
   margin: 40px auto;
+  background: #ff7a00;
   border-radius: 16px;
   overflow: hidden;
-  background: #ff7a00;
-  box-shadow: 0 30px 80px rgba(0,0,0,.35);
+}
+
+/* Remove TalkJS header */
+.talkjs-header {
+  display: none !important;
+}
+
+/* Hide avatars + names */
+.talkjs-message-author,
+.talkjs-message-avatar {
+  display: none !important;
+}
+
+/* Message bubble tweaks */
+.talkjs-message {
+  background: white !important;
+  color: black !important;
+  border-radius: 12px !important;
 }
 </style>
 </head>
@@ -40,6 +55,7 @@ html, body {
 
 <script>
 Talk.ready.then(() => {
+
   const me = new Talk.User({
     id: "buyer_1",
     name: "Me"
@@ -51,8 +67,8 @@ Talk.ready.then(() => {
   });
 
   const session = new Talk.Session({
-    appId: "tRkW5nYP",
-    me
+    appId: "tRkW5nYP", // keep your real appId
+    me: me
   });
 
   const conversation = session.getOrCreateConversation(
@@ -66,33 +82,6 @@ Talk.ready.then(() => {
     selected: conversation,
     showConversationList: false,
     showHeader: false
-  });
-
-  /* 🔥 FORCE ORANGE THEME */
-  inbox.setTheme({
-    chat: {
-      background: {
-        color: "#ff7a00"
-      },
-      message: {
-        author: {
-          showName: false,
-          showAvatar: false
-        },
-        incoming: {
-          bubble: {
-            backgroundColor: "#ffffff",
-            textColor: "#000000"
-          }
-        },
-        outgoing: {
-          bubble: {
-            backgroundColor: "#ff9f40",
-            textColor: "#000000"
-          }
-        }
-      }
-    }
   });
 
   inbox.mount(document.getElementById("talkjs-container"));
