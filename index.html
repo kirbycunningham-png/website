@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Chat After Purchase (TalkJS)</title>
+  <title>Marketplace</title>
 
   <!-- TalkJS -->
   <script>
@@ -15,93 +15,161 @@
 
   <style>
     body {
-      font-family: Arial, sans-serif;
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: #0e0f14;
+      color: #fff;
+    }
+
+    header {
+      padding: 20px 40px;
+      background: #14151c;
+      border-bottom: 1px solid #222;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .container {
       padding: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background: #14151c;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 0 1px #222;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .seller {
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 12px;
+    }
+
+    .price {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 14px;
     }
 
     button {
-      padding: 12px 20px;
-      font-size: 16px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
       cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
     }
 
-    #chatButton {
+    .buy {
+      background: #5b6cff;
+      color: white;
+    }
+
+    .chat {
+      background: #1f2230;
+      color: #5b6cff;
+      margin-top: 10px;
       display: none;
-      margin-top: 20px;
     }
 
     #talkjs-container {
-      width: 100%;
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 360px;
       height: 500px;
-      margin-top: 20px;
+      border-radius: 10px;
+      overflow: hidden;
       display: none;
+      box-shadow: 0 0 0 1px #222;
     }
   </style>
 </head>
 <body>
 
-  <h1>Product Page</h1>
-  <p>Buy the product to unlock chat with the seller.</p>
+<header>Marketplace</header>
 
-  <!-- Buy button -->
-  <button id="buyButton">Buy Now</button>
+<div class="container">
+  <div class="card">
+    <img src="https://picsum.photos/400/200" />
+    <div class="title">Game Account – Level 50</div>
+    <div class="seller">Seller: DarkTrader</div>
+    <div class="price">$25.00</div>
+    <button class="buy">Buy</button>
+    <button class="chat">Chat with Seller</button>
+  </div>
+</div>
 
-  <!-- Chat button (shown after purchase) -->
-  <button id="chatButton">Chat with Seller</button>
+<div id="talkjs-container"></div>
 
-  <!-- TalkJS chat container -->
-  <div id="talkjs-container"></div>
+<script>
+  const buyBtn = document.querySelector(".buy");
+  const chatBtn = document.querySelector(".chat");
+  const chatContainer = document.getElementById("talkjs-container");
 
-  <script>
-    const buyButton = document.getElementById("buyButton");
-    const chatButton = document.getElementById("chatButton");
-    const chatContainer = document.getElementById("talkjs-container");
+  buyBtn.addEventListener("click", () => {
+    alert("Purchase successful!");
+    chatBtn.style.display = "block";
+    buyBtn.style.display = "none";
+  });
 
-    // Simulate purchase
-    buyButton.addEventListener("click", () => {
-      alert("Purchase successful!");
-      buyButton.style.display = "none";
-      chatButton.style.display = "inline-block";
-    });
+  chatBtn.addEventListener("click", () => {
+    chatContainer.style.display = "block";
 
-    chatButton.addEventListener("click", () => {
-      chatContainer.style.display = "block";
-
-      Talk.ready.then(function () {
-        // Buyer
-        const buyer = new Talk.User({
-          id: "buyer_123",
-          name: "Buyer",
-          email: "buyer@example.com",
-          photoUrl: "https://talkjs.com/images/avatar-1.jpg",
-          role: "buyer"
-        });
-
-        // Seller
-        const seller = new Talk.User({
-          id: "seller_456",
-          name: "Seller",
-          email: "seller@example.com",
-          photoUrl: "https://talkjs.com/images/avatar-5.jpg",
-          role: "seller"
-        });
-
-        const session = new Talk.Session({
-          appId: "tRkW5nYP",
-          me: buyer
-        });
-
-        const conversationId = Talk.oneOnOneId(buyer, seller);
-        const conversation = session.getOrCreateConversation(conversationId);
-
-        conversation.setParticipant(buyer);
-        conversation.setParticipant(seller);
-
-        const inbox = session.createInbox({ selected: conversation });
-        inbox.mount(chatContainer);
+    Talk.ready.then(() => {
+      const buyer = new Talk.User({
+        id: "buyer_1",
+        name: "Buyer",
+        role: "buyer",
+        photoUrl: "https://talkjs.com/images/avatar-1.jpg"
       });
+
+      const seller = new Talk.User({
+        id: "seller_1",
+        name: "DarkTrader",
+        role: "seller",
+        photoUrl: "https://talkjs.com/images/avatar-5.jpg"
+      });
+
+      const session = new Talk.Session({
+        appId: "tRkW5nYP",
+        me: buyer
+      });
+
+      const conversation = session.getOrCreateConversation(
+        Talk.oneOnOneId(buyer, seller)
+      );
+
+      conversation.setParticipant(buyer);
+      conversation.setParticipant(seller);
+
+      const inbox = session.createInbox({ selected: conversation });
+      inbox.mount(chatContainer);
     });
-  </script>
+  });
+</script>
 
 </body>
 </html>
