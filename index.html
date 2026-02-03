@@ -1,169 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Kirby Marketplace</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-<style>
-body { margin:0; font-family:'Roboto',sans-serif; background:#f2f3f5; color:#333; }
-header { background:linear-gradient(90deg,#1e88e5,#42a5f5); color:white; padding:20px; font-size:28px; font-weight:bold; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
-.container { max-width:900px; margin:40px auto; padding:0 20px; }
-form { background:white; padding:30px; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.1); max-width:400px; margin:auto; }
-form h2 { text-align:center; margin-bottom:20px; }
-form input, form button { width:100%; padding:12px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc; font-size:16px; }
-form button { background:#1e88e5; color:white; border:none; cursor:pointer; font-weight:bold; transition:0.3s; }
-form button:hover { background:#1565c0; }
-#shopPage { display:none; }
-.item-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:25px; }
-.item-card { background: linear-gradient(145deg,#ffffff,#e0e5ec); border-radius:12px; padding:20px; text-align:center; box-shadow:6px 6px 12px #c8ccd1,-6px -6px 12px #ffffff; transition: transform 0.3s, box-shadow 0.3s; }
-.item-card:hover { transform: translateY(-8px); box-shadow:8px 8px 20px #c8ccd1,-8px -8px 20px #ffffff; }
-.item-card img { max-width:100%; border-radius:8px; margin-bottom:15px; }
-.item-title { font-size:20px; margin-bottom:10px; font-weight:700; }
-.item-price { color:#4caf50; font-weight:bold; margin-bottom:15px; font-size:18px; }
-.item-card button { background:#42a5f5; color:white; border:none; padding:12px 25px; font-size:16px; border-radius:6px; cursor:pointer; transition:0.3s; }
-.item-card button:hover { background:#1e88e5; transform: translateY(-3px); }
-#itemPage { display:none; }
-#itemPage h2 { font-size:28px; margin-bottom:10px; }
-@media(max-width:600px){ .item-grid { grid-template-columns:1fr; } }
-</style>
+  <meta charset="UTF-8" />
+  <title>Chat After Purchase (TalkJS)</title>
+
+  <!-- TalkJS -->
+  <script>
+    (function(t,a,l,k,j,s){
+      s=a.createElement('script');s.async=1;s.src="https://cdn.talkjs.com/talk.js";
+      a.head.appendChild(s);k=t.Promise;
+      t.Talk={v:3,ready:{then:function(f){if(k)return new k(function(r,e){l.push([f,r,e])});l.push([f])},catch:function(){return k&&new k()},c:l}};
+    })(window,document,[]);
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #chatButton {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #talkjs-container {
+      width: 100%;
+      height: 500px;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
-<header>Kirby's Marketplace</header>
-<div class="container">
+  <h1>Product Page</h1>
+  <p>Buy the product to unlock chat with the seller.</p>
 
-  <!-- Login/Signup -->
-  <form id="loginSignupForm">
-    <h2>Sign Up / Login</h2>
-    <input type="text" id="username" placeholder="Username" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <button type="submit">Continue</button>
-  </form>
+  <!-- Buy button -->
+  <button id="buyButton">Buy Now</button>
 
-  <!-- Shop Page -->
-  <div id="shopPage">
-    <h2>Shop</h2>
-    <button onclick="logout()" style="margin-bottom:20px;">Logout</button>
-    <div class="item-grid" id="itemsContainer"></div>
-  </div>
+  <!-- Chat button (shown after purchase) -->
+  <button id="chatButton">Chat with Seller</button>
 
-  <!-- Item Page -->
-  <div id="itemPage">
-    <h2 id="itemTitle"></h2>
-    <div class="item-price" id="itemPrice"></div>
-    <button onclick="openChat()">Chat with Seller</button>
-    <button onclick="backToShop()" style="margin-top:10px;">Back to Shop</button>
-  </div>
+  <!-- TalkJS chat container -->
+  <div id="talkjs-container"></div>
 
-</div>
+  <script>
+    const buyButton = document.getElementById("buyButton");
+    const chatButton = document.getElementById("chatButton");
+    const chatContainer = document.getElementById("talkjs-container");
 
-<script src="https://cdn.talkjs.com/talk.js"></script>
-<script>
-// --- Users DB ---
-let usersDB = JSON.parse(localStorage.getItem('usersDB') || '{}');
-const sellerAccount = {username:'Kirby', password:'Kirby'};
-let currentUser = null;
+    // Simulate purchase
+    buyButton.addEventListener("click", () => {
+      alert("Purchase successful!");
+      buyButton.style.display = "none";
+      chatButton.style.display = "inline-block";
+    });
 
-// --- Restore previous session ---
-const savedUser = localStorage.getItem('currentUser');
-if(savedUser){
-  currentUser = JSON.parse(savedUser);
-  showShop();
-}
+    chatButton.addEventListener("click", () => {
+      chatContainer.style.display = "block";
 
-// --- Login/Signup ---
-document.getElementById('loginSignupForm').onsubmit = function(e){
-  e.preventDefault();
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
+      Talk.ready.then(function () {
+        // Buyer
+        const buyer = new Talk.User({
+          id: "buyer_123",
+          name: "Buyer",
+          email: "buyer@example.com",
+          photoUrl: "https://talkjs.com/images/avatar-1.jpg",
+          role: "buyer"
+        });
 
-  if(username===sellerAccount.username && password===sellerAccount.password){
-    currentUser = {username:'Kirby', role:'seller'};
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    alert('Welcome, Kirby! You are logged in as seller.');
-    showShop();
-    return;
-  }
+        // Seller
+        const seller = new Talk.User({
+          id: "seller_456",
+          name: "Seller",
+          email: "seller@example.com",
+          photoUrl: "https://talkjs.com/images/avatar-5.jpg",
+          role: "seller"
+        });
 
-  if(!usersDB[username]){
-    usersDB[username] = {password};
-    localStorage.setItem('usersDB', JSON.stringify(usersDB));
-    alert('Buyer account created!');
-  }
+        const session = new Talk.Session({
+          appId: "tRkW5nYP",
+          me: buyer
+        });
 
-  if(usersDB[username].password !== password){
-    return alert('Invalid credentials!');
-  }
+        const conversationId = Talk.oneOnOneId(buyer, seller);
+        const conversation = session.getOrCreateConversation(conversationId);
 
-  currentUser = {username, role:'buyer'};
-  localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  showShop();
-};
+        conversation.setParticipant(buyer);
+        conversation.setParticipant(seller);
 
-// --- Show Shop ---
-function showShop(){
-  document.getElementById('loginSignupForm').style.display='none';
-  document.getElementById('itemPage').style.display='none';
-  document.getElementById('shopPage').style.display='block';
-  renderItems();
-}
-
-// --- Render Items ---
-function renderItems(){
-  const container = document.getElementById('itemsContainer');
-  container.innerHTML = '';
-  const item = {id:'garma', title:'Garma', price:50, img:'https://via.placeholder.com/200x120?text=Garma'};
-  const card = document.createElement('div');
-  card.className='item-card';
-  card.innerHTML=`<img src="${item.img}" alt="${item.title}">
-                  <div class="item-title">${item.title}</div>
-                  <div class="item-price">$${item.price}</div>
-                  <button onclick="openItem('${item.id}')">View & Chat</button>`;
-  container.appendChild(card);
-}
-
-// --- Item Page ---
-function openItem(itemId){
-  document.getElementById('shopPage').style.display='none';
-  document.getElementById('itemPage').style.display='block';
-  if(itemId==='garma'){
-    document.getElementById('itemTitle').innerText='Garma';
-    document.getElementById('itemPrice').innerText='$50';
-  }
-}
-
-// --- Back to Shop ---
-function backToShop(){
-  document.getElementById('itemPage').style.display='none';
-  document.getElementById('shopPage').style.display='block';
-}
-
-// --- Logout ---
-function logout(){
-  localStorage.removeItem('currentUser');
-  currentUser=null;
-  document.getElementById('itemPage').style.display='none';
-  document.getElementById('shopPage').style.display='none';
-  document.getElementById('loginSignupForm').style.display='block';
-}
-
-// --- TalkJS Chat (Popup Mode) ---
-function openChat(){
-  if(!currentUser) return alert('Select a user first');
-
-  // Directly trigger popup from click
-  const me = new Talk.User({ id: currentUser.username, name: currentUser.username });
-  const seller = new Talk.User({ id:'Kirby', name:'Kirby' });
-
-  const session = new Talk.Session({ appId:'tB1r7mJ6', me:me }); // Sandbox App ID works anywhere
-  const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me, seller));
-  conversation.setParticipant(me);
-  conversation.setParticipant(seller);
-
-  // Popup opens immediately
-  session.createPopup({selected:conversation}).open();
-}
-</script>
+        const inbox = session.createInbox({ selected: conversation });
+        inbox.mount(chatContainer);
+      });
+    });
+  </script>
 
 </body>
 </html>
