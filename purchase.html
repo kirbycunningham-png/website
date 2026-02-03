@@ -2,164 +2,122 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Purchase - ElDorado Marketplace</title>
+<title>Purchase - ElDorado</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.talkjs.com/talk.js"></script>
 <style>
-/* ===== BODY ===== */
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: #0f1115;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#0f1115,#1a1c25);
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:20px;
 }
-
-/* ===== PRODUCT INFO ===== */
-.product-info {
-    text-align: center;
-    margin-bottom: 30px;
+h1,h2{text-align:center;color:#00ff9c;}
+h1{font-size:2.5em;margin-bottom:10px;}
+h2{font-size:1.8em;margin-bottom:30px;}
+.purchase-container{
+    display:flex;
+    flex-wrap:wrap;
+    gap:40px;
+    width:100%;
+    max-width:1200px;
+    justify-content:center;
 }
-.product-info h1 {
-    font-size: 2em;
-    color: #00ff9c;
+.left-panel, .right-panel{
+    background:#1c1e2a;
+    border-radius:20px;
+    padding:25px;
 }
-.product-info h2 {
-    font-size: 1.5em;
-    color: #00ff9c;
-    margin-top: 10px;
+.left-panel{
+    flex:1 1 250px;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    min-width:250px;
 }
-
-/* ===== PURCHASE CONTAINER ===== */
-.purchase-container {
-    display: flex;
-    flex-direction: row;
-    gap: 30px;
-    width: 100%;
-    max-width: 1200px;
+.left-panel button{
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    font-weight:bold;
+    cursor:pointer;
+    background:#00c244;
+    color:white;
 }
-
-/* ===== BUTTON PANEL ===== */
-.button-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    min-width: 200px;
-}
-.button-panel button {
-    width: 100%;
-    padding: 15px 0;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: none;
-}
-.button-panel .cashapp {
-    background: #00c244;
-    color: #fff;
-}
-.button-panel .chat {
-    background: #00aaff;
-    color: #fff;
-}
-.button-panel button:hover {
-    opacity: 0.85;
-}
-
-/* ===== CHAT BOX ===== */
-#chatContainer {
-    flex: 1;
-    height: 650px;
-    border-radius: 12px;
-    overflow: hidden;
-    background: transparent;
-}
-
-/* ===== REMOVE TalkJS MENUS & NOTIFICATIONS ===== */
-#chatContainer .talkjs-container-header,
-#chatContainer .talkjs-container-menu,
-#chatContainer .talkjs-container-notification {
-    display: none !important;
+.left-panel button:hover{opacity:0.85;}
+.right-panel{
+    flex:2 1 500px;
+    min-width:400px;
+    height:650px;
+    border-radius:20px;
+    background:#1c1e2a;
+    overflow:hidden;
 }
 </style>
 </head>
 <body>
 
-<!-- PRODUCT INFO -->
-<div class="product-info">
-    <h1 id="itemName">Loading Product...</h1>
-    <h2 id="itemPrice">$0.00</h2>
-</div>
+<h1 id="itemName">Loading Product...</h1>
+<h2 id="itemPrice">$0.00</h2>
 
-<!-- PURCHASE CONTAINER -->
 <div class="purchase-container">
-    <!-- LEFT BUTTONS -->
-    <div class="button-panel">
-        <button class="cashapp" id="cashappBtn">Pay with CashApp</button>
-        <button class="chat" id="chatBtn">Chat with Seller</button>
+    <div class="left-panel">
+        <button id="cashappBtn">Pay with CashApp ($durgot)</button>
+        <button id="chatBtn">Chat with Seller</button>
     </div>
-
-    <!-- RIGHT CHAT BOX -->
-    <div id="chatContainer"></div>
+    <div class="right-panel" id="chatContainer"></div>
 </div>
 
 <script>
-// ===== DYNAMIC PRODUCT INFO =====
 const urlParams = new URLSearchParams(window.location.search);
 const productName = urlParams.get("name") || "Unknown Product";
 const productPrice = urlParams.get("price") || "$0.00";
-
 document.getElementById("itemName").textContent = productName;
 document.getElementById("itemPrice").textContent = productPrice;
 
-// ===== CASHAPP BUTTON =====
-document.getElementById("cashappBtn").addEventListener("click", () => {
-    window.location.href = "https://cash.app/$durgot"; // Your CashApp link
+// CashApp
+document.getElementById("cashappBtn").addEventListener("click", ()=>{
+    window.location.href = "https://cash.app/$durgot";
 });
 
-// ===== TALKJS CHAT =====
+// TalkJS Chat
 const talkjsAppId = "tRkW5nYP";
+const username = localStorage.getItem("username");
+const userEmail = localStorage.getItem("userEmail");
 
-document.getElementById("chatBtn").addEventListener("click", async () => {
+document.getElementById("chatBtn").addEventListener("click", async ()=>{
+    if(!username){
+        window.location.href = "https://kirbycunningham-png.github.io/website/signup";
+        return;
+    }
+
     await Talk.ready;
 
-    const buyerName = localStorage.getItem("username") || "Guest";
-    const buyerEmail = localStorage.getItem("userEmail") || "guest@example.com";
-
     const me = new Talk.User({
-        id: "buyer_" + buyerEmail,
-        name: buyerName,
-        email: buyerEmail,
-        photoUrl: "https://i.imgur.com/0F9Z4.png"
+        id: "buyer_"+userEmail,
+        name: username,
+        email: userEmail,
+        photoUrl:`https://ui-avatars.com/api/?name=${username.charAt(0)}&background=00ff9c&color=000`
     });
 
     const seller = new Talk.User({
-        id: "seller",
-        name: "ElDorado Seller",
-        email: "seller@example.com",
-        photoUrl: "https://i.imgur.com/0F9Z4.png"
+        id:"seller",
+        name:"ElDorado Seller",
+        email:"seller@example.com",
+        photoUrl:"https://i.imgur.com/0F9Z4.png"
     });
 
-    const session = new Talk.Session({
-        appId: talkjsAppId,
-        me: me,
-        notify: false // disables browser notifications
-    });
+    const session = new Talk.Session({appId:talkjsAppId,me:me,notify:false});
 
-    const conversationId = Talk.oneOnOneId(me, seller);
-    const conversation = session.getOrCreateConversation(conversationId);
+    const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me,seller));
     conversation.setParticipant(me);
     conversation.setParticipant(seller);
 
-    // Mount chat cleanly in the right panel
-    session.createInbox({ selected: conversation }).mount(document.getElementById("chatContainer"));
+    session.createChatbox(conversation).mount(document.getElementById("chatContainer"));
 });
 </script>
 
