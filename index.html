@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
     body { margin:0; font-family: Arial, sans-serif; background:#0f1115; color:white; display:flex; justify-content:center; align-items:center; min-height:100vh; }
+
     .hidden { display:none; }
 
     /* Common container */
@@ -20,7 +21,6 @@
     h2 { text-align:center; margin-bottom:20px; color:#00ff9c; }
     input { width:100%; padding:10px; margin:10px 0; border:none; border-radius:5px; }
     button { width:100%; padding:10px; margin-top:15px; border:none; border-radius:5px; font-weight:bold; cursor:pointer; }
-
     button:hover { opacity:0.85; }
 
     /* Marketplace */
@@ -35,15 +35,14 @@
     .item:hover { transform: translateY(-5px); }
     .item h3 { margin:0 0 10px; font-size:16px; }
     .price { color:#00ff9c; font-weight:bold; margin-bottom:10px; }
-    .item button { background:#00ff9c; color:#000; }
+    .item button { width:100%; padding:8px; background:#00ff9c; color:#000; border:none; border-radius:5px; cursor:pointer; font-weight:bold; }
     .item button:hover { background:#00cc7a; }
-
 </style>
 </head>
 <body>
 
 <!-- SIGNUP FORM -->
-<div class="container" id="signupFormContainer">
+<div class="container hidden" id="signupFormContainer">
     <h2>Sign Up</h2>
     <input type="text" id="signupUsername" placeholder="Username" required>
     <input type="email" id="signupEmail" placeholder="Email" required>
@@ -95,11 +94,11 @@
 </div>
 
 <script>
-// SHOW/HIDE FORMS
 const signupContainer = document.getElementById("signupFormContainer");
 const loginContainer = document.getElementById("loginFormContainer");
 const marketplaceContainer = document.getElementById("marketplaceContainer");
 
+// SHOW/HIDE FORMS
 document.getElementById("showLogin").addEventListener("click", () => {
     signupContainer.classList.add("hidden");
     loginContainer.classList.remove("hidden");
@@ -142,8 +141,7 @@ document.getElementById("loginBtn").addEventListener("click", () => {
 // LOGOUT
 document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem("loggedIn");
-    marketplaceContainer.classList.add("hidden");
-    loginContainer.classList.remove("hidden");
+    window.location.href = "/website/login"; // ✅ correct GitHub Pages path
 });
 
 // SHOW MARKETPLACE
@@ -156,14 +154,16 @@ function showMarketplace() {
     document.getElementById("usernameDisplay").textContent = username;
 }
 
-// AUTO LOGIN IF ALREADY LOGGED IN
-if (localStorage.getItem("loggedIn") === "true") {
-    showMarketplace();
-} else if (localStorage.getItem("userEmail")) {
-    // If account exists but not logged in, show login
-    signupContainer.classList.add("hidden");
-    loginContainer.classList.remove("hidden");
-}
+// AUTO REDIRECT / SHOW FORM ON PAGE LOAD
+window.addEventListener("load", () => {
+    if (localStorage.getItem("loggedIn") === "true") {
+        showMarketplace();
+    } else if (!localStorage.getItem("userEmail")) {
+        signupContainer.classList.remove("hidden"); // No account -> show signup
+    } else {
+        loginContainer.classList.remove("hidden"); // Account exists -> show login
+    }
+});
 </script>
 
 </body>
