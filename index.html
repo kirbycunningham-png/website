@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>TalkJS Messages</title>
+<title>TalkJS Chat</title>
 
+<!-- TalkJS -->
 <script>
 (function(t,a,l,k,j,s){
   s=a.createElement('script');s.async=1;s.src="https://cdn.talkjs.com/talk.js";
@@ -16,20 +17,22 @@
 html, body {
   margin: 0;
   height: 100%;
-  background: #ff7a00;
+  background: #ff7a00; /* ORANGE WEBSITE */
   font-family: Arial, sans-serif;
 }
 
+/* Chat box */
 #talkjs-container {
   width: 420px;
   height: 540px;
   margin: 40px auto;
-  background: #ff7a00;
+  background: #000; /* BLACK CHAT */
   border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,.4);
 }
 
-/* Remove TalkJS header */
+/* Kill TalkJS header */
 .talkjs-header {
   display: none !important;
 }
@@ -40,11 +43,16 @@ html, body {
   display: none !important;
 }
 
-/* Message bubble tweaks */
+/* Message bubbles */
 .talkjs-message {
-  background: white !important;
-  color: black !important;
+  background: #111 !important;
+  color: #fff !important;
   border-radius: 12px !important;
+}
+
+/* Outgoing messages */
+.talkjs-message.me {
+  background: #1f1f1f !important;
 }
 </style>
 </head>
@@ -67,8 +75,8 @@ Talk.ready.then(() => {
   });
 
   const session = new Talk.Session({
-    appId: "tRkW5nYP", // keep your real appId
-    me: me
+    appId: "tRkW5nYP",
+    me
   });
 
   const conversation = session.getOrCreateConversation(
