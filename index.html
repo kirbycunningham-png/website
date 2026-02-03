@@ -4,111 +4,123 @@
 <meta charset="UTF-8">
 <title>ElDorado Marketplace</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.talkjs.com/talk.js"></script>
 <style>
-body{
+body {
     margin:0;
-    font-family:'Segoe UI',sans-serif;
+    font-family:'Segoe UI', sans-serif;
     background: linear-gradient(135deg,#0f1115,#1a1c25);
     color:#fff;
-    padding:20px;
+    min-height:100vh;
+    padding:30px;
 }
-header{
-    display:flex;
-    justify-content: space-between;
-    align-items:center;
-    margin-bottom:30px;
-}
-header h1{color:#00ff9c;}
-header .user-panel button{
-    background:#00ff9c;
-    color:#000;
-    border:none;
-    padding:10px 15px;
-    border-radius:10px;
-    cursor:pointer;
-    font-weight:bold;
-}
-.market{
+h1{color:#00ff9c;text-align:center;margin-bottom:40px;}
+.product-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
     gap:20px;
 }
-.product{
+.product-card{
     background:#1c1e2a;
-    padding:15px;
     border-radius:20px;
+    padding:20px;
     text-align:center;
-    transition:0.3s;
+    box-shadow:0 0 20px #00ff9c;
 }
-.product:hover{transform:scale(1.05);}
-.product h2{color:#00ff9c;margin:10px 0;}
-.product button{
+.product-card h2{margin:10px 0;color:#00ff9c;}
+.product-card p{margin:5px 0;color:#fff;}
+.product-card button{
     padding:10px 15px;
     border:none;
-    border-radius:12px;
-    background:#00c244;
-    color:white;
+    border-radius:10px;
     font-weight:bold;
     cursor:pointer;
     transition:0.3s;
+    margin-top:10px;
 }
-.product button:hover{opacity:0.85;}
+.buyBtn{background:#00c244;color:#fff;}
+.chatBtn{background:#00aaff;color:#fff;}
+.buyBtn:hover,.chatBtn:hover{opacity:0.85;}
 </style>
 </head>
 <body>
-
-<header>
 <h1>ElDorado Marketplace</h1>
-<div class="user-panel">
-<span id="userNameDisplay"></span>
-<button id="logoutBtn" style="display:none;">Logout</button>
-</div>
-</header>
-
-<div class="market" id="marketplace">
-<!-- Products will be inserted here -->
+<div class="product-grid" id="productGrid">
+  <!-- Products added by JS -->
 </div>
 
 <script>
-// ===== Login status =====
+// ===== User Login Check =====
 const username = localStorage.getItem("username");
-if(username){
-    document.getElementById("userNameDisplay").textContent = username;
-    document.getElementById("logoutBtn").style.display = "inline-block";
-}
+const userEmail = localStorage.getItem("userEmail");
 
-document.getElementById("logoutBtn").addEventListener("click",()=>{
-    localStorage.removeItem("username");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userId");
-    window.location.reload();
-});
-
-// ===== Sample products =====
+// ===== Sample Products =====
 const products = [
-    {name:"Gold Sword", price:"$50"},
-    {name:"Silver Shield", price:"$30"},
-    {name:"Magic Potion", price:"$15"},
-    {name:"Eldorado Gem", price:"$100"}
+  {name:"Eldorado Gem #1", price:"$10.00"},
+  {name:"Eldorado Gem #2", price:"$15.00"},
+  {name:"Eldorado Gem #3", price:"$20.00"},
 ];
 
-const marketEl = document.getElementById("marketplace");
-products.forEach(p=>{
-    const div = document.createElement("div");
-    div.className = "product";
-    div.innerHTML = `<h2>${p.name}</h2><p>${p.price}</p><button>Buy</button>`;
-    div.querySelector("button").addEventListener("click",()=>{
+const grid = document.getElementById("productGrid");
+
+products.forEach(prod=>{
+    const card = document.createElement("div");
+    card.className="product-card";
+    card.innerHTML = `
+        <h2>${prod.name}</h2>
+        <p>Price: ${prod.price}</p>
+        <button class="buyBtn">Buy</button>
+        <button class="chatBtn">Chat with Seller</button>
+    `;
+    grid.appendChild(card);
+
+    const buyBtn = card.querySelector(".buyBtn");
+    const chatBtn = card.querySelector(".chatBtn");
+
+    // Buy button
+    buyBtn.addEventListener("click", ()=>{
         if(!username){
-            window.location.href = "login.html";
+            window.location.href="signup.html";
         } else {
-            const urlName = encodeURIComponent(p.name);
-            const urlPrice = encodeURIComponent(p.price);
-            window.location.href = `purchase.html?name=${urlName}&price=${urlPrice}`;
+            const url = `purchase.html?name=${encodeURIComponent(prod.name)}&price=${encodeURIComponent(prod.price)}`;
+            window.location.href=url;
         }
     });
-    marketEl.appendChild(div);
+
+    // Chat button
+    chatBtn.addEventListener("click", async ()=>{
+        if(!username){
+            window.location.href="login.html";
+            return;
+        }
+
+        await Talk.ready;
+
+        const buyer = new Talk.User({
+            id: "buyer_" + username,
+            name: username,
+            email: userEmail || "guest@example.com",
+            photoUrl: "https://i.imgur.com/0F9Z4.png"
+        });
+
+        const seller = new Talk.User({
+            id: "seller", // Must match admin
+            name: "ElDorado Seller",
+            email: "seller@example.com",
+            photoUrl: "https://i.imgur.com/0F9Z4.png"
+        });
+
+        const session = new Talk.Session({appId:"tRkW5nYP", me: buyer, notify:false});
+        const conversation = session.getOrCreateConversation(Talk.oneOnOneId(buyer, seller));
+        conversation.setParticipant(buyer);
+        conversation.setParticipant(seller);
+
+        // Open chat in popup
+        const chatbox = session.createChatbox(conversation);
+        chatbox.mount(document.createElement("div"));
+        chatbox.show();
+    });
 });
 </script>
-
 </body>
 </html>
