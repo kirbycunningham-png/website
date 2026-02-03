@@ -2,137 +2,84 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Marketplace</title>
+<title>Messages</title>
 
 <!-- TalkJS -->
-<script src="https://cdn.talkjs.com/talk.js"></script>
+<script>
+(function(t,a,l,k,j,s){
+  s=a.createElement('script');s.async=1;s.src="https://cdn.talkjs.com/talk.js";
+  a.head.appendChild(s);k=t.Promise;
+  t.Talk={v:3,ready:{then:function(f){if(k)return new k(function(r,e){l.push([f,r,e])});l.push([f])},catch:function(){return k&&new k()},c:l}};
+})(window,document,[]);
+</script>
 
 <style>
 html, body {
   margin: 0;
   height: 100%;
-  font-family: Inter, Arial, sans-serif;
-  background: #000;
-  color: #fff;
-}
-
-/* Marketplace */
-.container {
-  padding: 40px;
-}
-
-.card {
-  width: 280px;
   background: #0e0f14;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 0 1px #1f2028;
+  font-family: Inter, Arial, sans-serif;
 }
 
-button {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.buy {
-  background: #5b6cff;
-  color: #fff;
-}
-
-.chat {
-  margin-top: 10px;
-  background: #1b1d27;
-  color: #5b6cff;
-  display: none;
-}
-
-/* Overlay */
-#chat-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.75);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-/* Chat modal */
-.chatbox-wrapper {
+/* Chat container */
+#talkjs-container {
   width: 420px;
   height: 540px;
-  background: #000;
+  margin: 40px auto;
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0,0,0,.9);
-  transform: scale(.9);
-  opacity: 0;
-  transition: all .25s ease;
-}
-
-#chat-overlay.show .chatbox-wrapper {
-  transform: scale(1);
-  opacity: 1;
-}
-
-t-chatbox {
-  width: 100%;
-  height: 100%;
+  box-shadow: 0 30px 80px rgba(0,0,0,.8);
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-  <div class="card">
-    <h3>Game Account – Level 50</h3>
-    <p style="color:#aaa">Seller: DarkTrader</p>
-    <strong>$25.00</strong>
-    <br><br>
-    <button class="buy">Buy</button>
-    <button class="chat">Chat with Seller</button>
-  </div>
-</div>
-
-<!-- Chat Overlay -->
-<div id="chat-overlay">
-  <div class="chatbox-wrapper">
-    <t-chatbox
-      app-id="tRkW5nYP"
-      user-id="buyer_1"
-      conversation-id="buyer_1__seller_1"
-      theme="dark"
-      chat-header-visible="false"
-    ></t-chatbox>
-  </div>
-</div>
+<div id="talkjs-container"></div>
 
 <script>
-const buyBtn = document.querySelector(".buy");
-const chatBtn = document.querySelector(".chat");
-const overlay = document.getElementById("chat-overlay");
+Talk.ready.then(() => {
+  const me = new Talk.User({
+    id: "buyer_1",
+    name: "Buyer"
+  });
 
-buyBtn.onclick = () => {
-  chatBtn.style.display = "block";
-  buyBtn.style.display = "none";
-};
+  const seller = new Talk.User({
+    id: "seller_1",
+    name: "Seller"
+  });
 
-chatBtn.onclick = () => {
-  overlay.style.display = "flex";
-  setTimeout(() => overlay.classList.add("show"), 10);
-};
+  const session = new Talk.Session({
+    appId: "tRkW5nYP",
+    me: me
+  });
 
-// Close when clicking background
-overlay.addEventListener("click", e => {
-  if (e.target === overlay) {
-    overlay.classList.remove("show");
-    setTimeout(() => overlay.style.display = "none", 200);
-  }
+  const conversation = session.getOrCreateConversation(
+    Talk.oneOnOneId(me, seller)
+  );
+
+  conversation.setParticipant(me);
+  conversation.setParticipant(seller);
+
+  const inbox = session.createInbox({
+    selected: conversation,
+    showConversationList: false,
+    showHeader: false
+  });
+
+  /* 🔥 THEME: messages only */
+  inbox.setTheme({
+    chat: {
+      message: {
+        author: {
+          showName: false,
+          showAvatar: false
+        }
+      }
+    }
+  });
+
+  inbox.mount(document.getElementById("talkjs-container"));
 });
 </script>
 
