@@ -5,19 +5,14 @@
 <title>Marketplace</title>
 
 <!-- TalkJS -->
-<script>
-(function(t,a,l,k,j,s){
-  s=a.createElement('script');s.async=1;s.src="https://cdn.talkjs.com/talk.js";
-  a.head.appendChild(s);k=t.Promise;
-  t.Talk={v:3,ready:{then:function(f){if(k)return new k(function(r,e){l.push([f,r,e])});l.push([f])},catch:function(){return k&&new k()},c:l}};
-})(window,document,[]);
-</script>
+<script src="https://cdn.talkjs.com/talk.js"></script>
 
 <style>
-body {
+html, body {
   margin: 0;
+  height: 100%;
   font-family: Inter, Arial, sans-serif;
-  background: #0e0f14;
+  background: #000;
   color: #fff;
 }
 
@@ -28,10 +23,10 @@ body {
 
 .card {
   width: 280px;
-  background: #14151c;
+  background: #0e0f14;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 0 1px #222;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px #1f2028;
 }
 
 button {
@@ -59,7 +54,7 @@ button {
 #chat-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.6);
+  background: rgba(0,0,0,.75);
   display: none;
   align-items: center;
   justify-content: center;
@@ -67,22 +62,26 @@ button {
 }
 
 /* Chat modal */
-#talkjs-container {
+.chatbox-wrapper {
   width: 420px;
   height: 540px;
-  background: #0e0f14;
+  background: #000;
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0,0,0,.8);
+  box-shadow: 0 30px 80px rgba(0,0,0,.9);
   transform: scale(.9);
   opacity: 0;
   transition: all .25s ease;
 }
 
-/* Show animation */
-#chat-overlay.show #talkjs-container {
+#chat-overlay.show .chatbox-wrapper {
   transform: scale(1);
   opacity: 1;
+}
+
+t-chatbox {
+  width: 100%;
+  height: 100%;
 }
 </style>
 </head>
@@ -100,9 +99,17 @@ button {
   </div>
 </div>
 
-<!-- Centered Chat -->
+<!-- Chat Overlay -->
 <div id="chat-overlay">
-  <div id="talkjs-container"></div>
+  <div class="chatbox-wrapper">
+    <t-chatbox
+      app-id="tRkW5nYP"
+      user-id="buyer_1"
+      conversation-id="buyer_1__seller_1"
+      theme="dark"
+      chat-header-visible="false"
+    ></t-chatbox>
+  </div>
 </div>
 
 <script>
@@ -118,41 +125,9 @@ buyBtn.onclick = () => {
 chatBtn.onclick = () => {
   overlay.style.display = "flex";
   setTimeout(() => overlay.classList.add("show"), 10);
-
-  Talk.ready.then(() => {
-    const buyer = new Talk.User({
-      id: "buyer_1",
-      name: "Buyer"
-    });
-
-    const seller = new Talk.User({
-      id: "seller_1",
-      name: "DarkTrader"
-    });
-
-    const session = new Talk.Session({
-      appId: "tRkW5nYP",
-      me: buyer
-    });
-
-    const conversation = session.getOrCreateConversation(
-      Talk.oneOnOneId(buyer, seller)
-    );
-
-    conversation.setParticipant(buyer);
-    conversation.setParticipant(seller);
-
-    const inbox = session.createInbox({
-      selected: conversation,
-      showConversationList: false,
-      showHeader: false
-    });
-
-    inbox.mount(document.getElementById("talkjs-container"));
-  });
 };
 
-// Close on background click
+// Close when clicking background
 overlay.addEventListener("click", e => {
   if (e.target === overlay) {
     overlay.classList.remove("show");
