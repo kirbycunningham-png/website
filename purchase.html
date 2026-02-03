@@ -135,15 +135,15 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
         photoUrl: `https://ui-avatars.com/api/?name=${username.charAt(0)}&background=00ff9c&color=000`
     });
 
-    // Seller (admin) — must match admin dashboard ID
+    // Seller (admin)
     const sellerUser = new Talk.User({
-        id: "seller",   // MUST match admin dashboard
+        id: "seller",
         name: "Seller",
         email: "seller@example.com",
         photoUrl: "https://i.imgur.com/0F9Z4.png"
     });
 
-    // Create TalkJS session for buyer
+    // Create TalkJS session using your App ID
     const session = new Talk.Session({
         appId: "tRkW5nYP",
         me: me,
@@ -155,11 +155,14 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     conversation.setParticipant(me);
     conversation.setParticipant(sellerUser);
 
-    // Correct method: createChatbox
-    chatBoxInstance = session.createChatbox(conversation);
+    // Create chatbox without default welcome message
+    chatBoxInstance = session.createChatbox(conversation, {
+        welcomeMessage: "" // removes "Hi! How can I help you?"
+    });
     chatBoxInstance.mount(chatContainer);
     chatContainer.style.display = "block";
 });
 </script>
+
 </body>
 </html>
