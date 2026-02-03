@@ -5,155 +5,108 @@
 <title>ElDorado Marketplace</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
     background: linear-gradient(135deg,#0f1115,#1a1c25);
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
+    color:#fff;
+    padding:20px;
 }
-header {
-    width: 100%;
-    max-width: 1200px;
-    display: flex;
+header{
+    display:flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
+    align-items:center;
+    margin-bottom:30px;
 }
-header h1 {
-    color: #00ff9c;
-    font-size: 2.5em;
-    text-shadow: 0 0 10px #00ff9c;
+header h1{color:#00ff9c;}
+header .user-panel button{
+    background:#00ff9c;
+    color:#000;
+    border:none;
+    padding:10px 15px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
 }
-header .user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+.market{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:20px;
 }
-header .user-info span {
-    font-size: 1.2em;
-    color: #00ff9c;
+.product{
+    background:#1c1e2a;
+    padding:15px;
+    border-radius:20px;
+    text-align:center;
+    transition:0.3s;
 }
-header .user-info button {
-    background: #ff3b3b;
-    color: #fff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
+.product:hover{transform:scale(1.05);}
+.product h2{color:#00ff9c;margin:10px 0;}
+.product button{
+    padding:10px 15px;
+    border:none;
+    border-radius:12px;
+    background:#00c244;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
 }
-header .user-info button:hover {
-    opacity: 0.85;
-}
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
-    gap: 30px;
-    width: 100%;
-    max-width: 1200px;
-}
-.product {
-    background: #1c1e2a;
-    border-radius: 20px;
-    padding: 25px;
-    text-align: center;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-.product:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,255,156,0.4);
-}
-.product h2 {
-    color: #00ff9c;
-    margin-bottom: 12px;
-    font-size: 1.6em;
-}
-.product p {
-    color: #fff;
-    margin-bottom: 15px;
-    font-size: 1.2em;
-}
-.product button {
-    background: #00c244;
-    color: #fff;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: bold;
-}
-.product button:hover {
-    opacity: 0.85;
-}
+.product button:hover{opacity:0.85;}
 </style>
 </head>
 <body>
 
 <header>
-    <h1>ElDorado Marketplace</h1>
-    <div class="user-info" id="userInfo">
-        <span id="usernameDisplay">Guest</span>
-        <button id="logoutBtn" style="display:none;">Logout</button>
-    </div>
+<h1>ElDorado Marketplace</h1>
+<div class="user-panel">
+<span id="userNameDisplay"></span>
+<button id="logoutBtn" style="display:none;">Logout</button>
+</div>
 </header>
 
-<div class="product-grid">
-    <div class="product">
-        <h2>Product 1</h2>
-        <p>$19.99</p>
-        <button class="buyBtn" data-name="Product 1" data-price="19.99">Buy</button>
-    </div>
-    <div class="product">
-        <h2>Product 2</h2>
-        <p>$29.99</p>
-        <button class="buyBtn" data-name="Product 2" data-price="29.99">Buy</button>
-    </div>
-    <div class="product">
-        <h2>Product 3</h2>
-        <p>$49.99</p>
-        <button class="buyBtn" data-name="Product 3" data-price="49.99">Buy</button>
-    </div>
+<div class="market" id="marketplace">
+<!-- Products will be inserted here -->
 </div>
 
 <script>
-// ===== USER LOGIN STATUS =====
+// ===== Login status =====
 const username = localStorage.getItem("username");
-const userEmail = localStorage.getItem("userEmail");
-const usernameDisplay = document.getElementById("usernameDisplay");
-const logoutBtn = document.getElementById("logoutBtn");
-
 if(username){
-    usernameDisplay.textContent = username;
-    logoutBtn.style.display = "inline-block";
-} else {
-    usernameDisplay.textContent = "Guest";
+    document.getElementById("userNameDisplay").textContent = username;
+    document.getElementById("logoutBtn").style.display = "inline-block";
 }
 
-// ===== LOGOUT =====
-logoutBtn.addEventListener("click", ()=>{
+document.getElementById("logoutBtn").addEventListener("click",()=>{
     localStorage.removeItem("username");
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("userId");
     window.location.reload();
 });
 
-// ===== BUY BUTTON =====
-document.querySelectorAll(".buyBtn").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
+// ===== Sample products =====
+const products = [
+    {name:"Gold Sword", price:"$50"},
+    {name:"Silver Shield", price:"$30"},
+    {name:"Magic Potion", price:"$15"},
+    {name:"Eldorado Gem", price:"$100"}
+];
+
+const marketEl = document.getElementById("marketplace");
+products.forEach(p=>{
+    const div = document.createElement("div");
+    div.className = "product";
+    div.innerHTML = `<h2>${p.name}</h2><p>${p.price}</p><button>Buy</button>`;
+    div.querySelector("button").addEventListener("click",()=>{
         if(!username){
-            // Not logged in → login page
-            window.location.href = "https://kirbycunningham-png.github.io/website/login";
-            return;
+            window.location.href = "login.html";
+        } else {
+            const urlName = encodeURIComponent(p.name);
+            const urlPrice = encodeURIComponent(p.price);
+            window.location.href = `purchase.html?name=${urlName}&price=${urlPrice}`;
         }
-        // Logged in → purchase page
-        const name = btn.dataset.name;
-        const price = btn.dataset.price;
-        window.location.href = `https://kirbycunningham-png.github.io/website/purchase?name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
     });
+    marketEl.appendChild(div);
 });
 </script>
 
