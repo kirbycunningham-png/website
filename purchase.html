@@ -91,7 +91,7 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
 
 <div class="purchase-container">
     <div class="left-panel">
-        <button id="cashappBtn">Pay with CashApp ($durgot)</button>
+        <button id="cashappBtn">Pay with CashApp</button>
         <button id="chatBtn">Open Chat with Seller</button>
     </div>
     <div class="right-panel">
@@ -113,17 +113,14 @@ document.getElementById("cashappBtn").addEventListener("click", () => {
 });
 
 // ===== TalkJS Chat =====
-const talkjsAppId = "tRkW5nYP";
-const username = localStorage.getItem("username");
-const userId = localStorage.getItem("userId");
+const username = localStorage.getItem("username") || "Guest";
+const userId = localStorage.getItem("userId") || "buyer_" + username;
 
 let chatBoxInstance = null;
-let chatOpen = false;
-
 const chatContainer = document.getElementById("chatContainer");
 
 document.getElementById("chatBtn").addEventListener("click", async () => {
-    if (!username) {
+    if(!username || username === "Guest"){
         window.location.href = "signup.html";
         return;
     }
@@ -137,38 +134,27 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
         photoUrl: `https://ui-avatars.com/api/?name=${username.charAt(0)}&background=00ff9c&color=000`
     });
 
-    const seller = new Talk.User({
-        id: "seller",
-        name: "ElDorado Seller",
-        email: "seller@example.com",
+    const adminUser = new Talk.User({
+        id: "admin",
+        name: "ElDorado Admin",
+        email: "admin@example.com",
         photoUrl: "https://i.imgur.com/0F9Z4.png"
     });
 
     const session = new Talk.Session({
-        appId: talkjsAppId,
+        appId: "tRkW5nYP",
         me: me,
-        notify: false
+        notify: true
     });
 
-    const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me, seller));
+    const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me, adminUser));
     conversation.setParticipant(me);
-    conversation.setParticipant(seller);
+    conversation.setParticipant(adminUser);
 
-    // Toggle chat open/close
-    if (!chatOpen) {
-        chatBoxInstance = session.createChatbox(conversation);
-        chatBoxInstance.mount(chatContainer);
-        chatContainer.style.display = "block";
-        document.getElementById("chatBtn").textContent = "Close Chat with Seller";
-        chatOpen = true;
-    } else {
-        chatBoxInstance.destroy();
-        chatContainer.style.display = "none";
-        document.getElementById("chatBtn").textContent = "Open Chat with Seller";
-        chatOpen = false;
-    }
+    chatBoxInstance = session.createChatBox(conversation);
+    chatBoxInstance.mount(chatContainer);
+    chatContainer.style.display = "block";
 });
 </script>
-
 </body>
 </html>
