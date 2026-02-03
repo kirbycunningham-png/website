@@ -105,7 +105,7 @@ loginBtn.addEventListener("click", async () => {
 
         // Admin logs in as the seller
         const me = new Talk.User({
-            id: "seller",
+            id: "seller",      // seller ID
             name: "Seller",
             email: adminEmail,
             photoUrl: "https://i.imgur.com/0F9Z4.png"
@@ -132,10 +132,22 @@ logoutBtn.addEventListener("click", ()=>{
     inboxContainer.innerHTML="";
 });
 
-// Clear inbox temporarily
+// Clear inbox temporarily (hide it without destroying)
 clearBtn.addEventListener("click", ()=>{
-    inboxContainer.innerHTML = "";
+    // Instead of removing DOM, just hide the container
+    inboxContainer.style.display = "none";
 });
+
+// Automatically show inbox again if a new message arrives
+if (typeof Talk !== "undefined") {
+    Talk.ready.then(() => {
+        if (session) {
+            session.on("message", () => {
+                inboxContainer.style.display = "block";
+            });
+        }
+    });
+}
 </script>
 
 </body>
