@@ -17,7 +17,7 @@
 html, body {
   margin: 0;
   height: 100%;
-  background: #0e0f14;
+  background: #ff7a00;
   font-family: Inter, Arial, sans-serif;
 }
 
@@ -26,9 +26,10 @@ html, body {
   width: 420px;
   height: 540px;
   margin: 40px auto;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0,0,0,.8);
+  background: #ff7a00;
+  box-shadow: 0 30px 80px rgba(0,0,0,.35);
 }
 </style>
 </head>
@@ -41,7 +42,7 @@ html, body {
 Talk.ready.then(() => {
   const me = new Talk.User({
     id: "buyer_1",
-    name: "Buyer"
+    name: "Me"
   });
 
   const seller = new Talk.User({
@@ -51,7 +52,7 @@ Talk.ready.then(() => {
 
   const session = new Talk.Session({
     appId: "tRkW5nYP",
-    me: me
+    me
   });
 
   const conversation = session.getOrCreateConversation(
@@ -67,13 +68,28 @@ Talk.ready.then(() => {
     showHeader: false
   });
 
-  /* 🔥 THEME: messages only */
+  /* 🔥 FORCE ORANGE THEME */
   inbox.setTheme({
     chat: {
+      background: {
+        color: "#ff7a00"
+      },
       message: {
         author: {
           showName: false,
           showAvatar: false
+        },
+        incoming: {
+          bubble: {
+            backgroundColor: "#ffffff",
+            textColor: "#000000"
+          }
+        },
+        outgoing: {
+          bubble: {
+            backgroundColor: "#ff9f40",
+            textColor: "#000000"
+          }
         }
       }
     }
