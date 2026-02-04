@@ -74,6 +74,20 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     overflow: hidden;
     position: relative;
 }
+
+/* Black overlay */
+#overlayBox {
+    position: absolute;
+    top: 72px;
+    left: 22.5%;
+    width: 55%;
+    height: 20px;
+    background: #111111;
+    border-radius: 5px;
+    z-index: 10000;
+    pointer-events: none;
+    display: none; /* hidden by default, will show after chat loads */
+}
 </style>
 </head>
 <body>
@@ -87,6 +101,7 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     </div>
     <div class="right-panel">
         <div id="chatContainer"></div>
+        <div id="overlayBox"></div>
     </div>
 </div>
 
@@ -103,7 +118,7 @@ document.getElementById("cashappBtn").addEventListener("click", () => {
     window.location.href = "https://cash.app/$durgot";
 });
 
-// ===== TalkJS Chat Always Visible =====
+// ===== TalkJS Chat Always Visible with Overlay =====
 const username = localStorage.getItem("username") || "Guest";
 const userId = localStorage.getItem("userId") || "buyer_" + username;
 
@@ -126,7 +141,6 @@ const userId = localStorage.getItem("userId") || "buyer_" + username;
         photoUrl: "https://i.imgur.com/0F9Z4.png"
     });
 
-    // Original session settings
     const session = new Talk.Session({
         appId: "tRkW5nYP",
         me: me,
@@ -137,9 +151,13 @@ const userId = localStorage.getItem("userId") || "buyer_" + username;
     conversation.setParticipant(me);
     conversation.setParticipant(sellerUser);
 
-    // Original chatbox creation
     const chatBox = session.createChatbox(conversation);
     chatBox.mount(document.getElementById("chatContainer"));
+
+    // Show overlay 350ms after chat is mounted
+    setTimeout(() => {
+        document.getElementById("overlayBox").style.display = "block";
+    }, 350);
 })();
 </script>
 
