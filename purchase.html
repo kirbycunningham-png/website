@@ -168,15 +168,15 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
             defaultMsg.textContent = "Welcome to your chat with the seller!";
         }
 
-        // Thin black horizontal line overlay
+        // Thick, short black horizontal line overlay
         const overlay = document.createElement("div");
         overlay.style.position = "absolute";
-        overlay.style.top = "65px"; // moved down
-        overlay.style.left = "20%"; // centered narrower
-        overlay.style.width = "60%"; // smaller width
-        overlay.style.height = "10px"; // vertical height
-        overlay.style.background = "black"; // black line
-        overlay.style.borderRadius = "5px"; // subtle rounded ends
+        overlay.style.top = "70px"; // moved slightly further down
+        overlay.style.left = "35%"; // center horizontally
+        overlay.style.width = "30%"; // smaller sideways
+        overlay.style.height = "20px"; // thicker
+        overlay.style.background = "black"; 
+        overlay.style.borderRadius = "5px";
         overlay.style.zIndex = "9999";
         overlay.style.pointerEvents = "none";
         chatContainer.appendChild(overlay);
