@@ -42,18 +42,17 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     gap: 20px;
 }
 
-.left-panel button {
+#cashappBtn {
     padding: 15px;
     font-weight: bold;
     border-radius: 12px;
     border: none;
     cursor: pointer;
+    background: #00c244;
+    color: white;
     transition: 0.3s;
 }
-
-#cashappBtn { background: #00c244; color: white; }
-#chatBtn, #closeChatBtn { background: #00aaff; color: white; }
-.left-panel button:hover { opacity: 0.85; }
+#cashappBtn:hover { opacity: 0.85; }
 
 .right-panel {
     flex: 2 1 500px;
@@ -73,7 +72,6 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     height: 95%;
     border-radius: 12px;
     overflow: hidden;
-    display: none;
     position: relative;
 }
 </style>
@@ -86,8 +84,6 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
 <div class="purchase-container">
     <div class="left-panel">
         <button id="cashappBtn">Pay with CashApp</button>
-        <button id="chatBtn">Open Chat</button>
-        <button id="closeChatBtn">Close Chat</button>
     </div>
     <div class="right-panel">
         <div id="chatContainer"></div>
@@ -113,8 +109,7 @@ let chatBoxInstance = null;
 let overlay = null;
 const chatContainer = document.getElementById("chatContainer");
 
-// Open Chat
-document.getElementById("chatBtn").addEventListener("click", async () => {
+async function initChat() {
     if(!username || username === "Guest"){
         window.location.href = "signup.html";
         return;
@@ -157,46 +152,30 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
 
     chatContainer.style.display = "block";
 
-    // Overlay function
-    const addOverlay = () => {
-        if(!overlay){
-            overlay = document.createElement("div");
-            overlay.style.position = "absolute";
-            overlay.style.top = "72px"; // slightly adjusted
-            overlay.style.left = "22.5%";
-            overlay.style.width = "55%";
-            overlay.style.height = "20px"; // smaller height like before
-            overlay.style.background = "#111111";
-            overlay.style.borderRadius = "5px";
-            overlay.style.zIndex = "10000";
-            overlay.style.pointerEvents = "none";
-            chatContainer.appendChild(overlay);
+    // Add black overlay immediately after TalkJS loads
+    if(!overlay){
+        overlay = document.createElement("div");
+        overlay.style.position = "absolute";
+        overlay.style.top = "65px";
+        overlay.style.left = "22.5%";
+        overlay.style.width = "55%";
+        overlay.style.height = "40px";
+        overlay.style.background = "#111111"; // your requested color
+        overlay.style.borderRadius = "5px";
+        overlay.style.zIndex = "10000";
+        overlay.style.pointerEvents = "none";
+        chatContainer.appendChild(overlay);
 
-            // Replace Test Mode text if present
-            const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
-            if(defaultMsg){
-                defaultMsg.textContent = "Welcome to your chat with the seller!";
-            }
+        // Replace Test Mode text if present
+        const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
+        if(defaultMsg){
+            defaultMsg.textContent = "Welcome to your chat with the seller!";
         }
-    };
-
-    // First open: 350ms delay
-    if(!sessionStorage.getItem("chatOpened")){
-        setTimeout(addOverlay, 350);
-        sessionStorage.setItem("chatOpened", "true");
-    } else {
-        addOverlay();
     }
-});
+}
 
-// Close Chat
-document.getElementById("closeChatBtn").addEventListener("click", () => {
-    chatContainer.style.display = "none";
-    if(overlay){
-        overlay.remove();
-        overlay = null;
-    }
-});
+// Initialize chat automatically
+initChat();
 </script>
 
 </body>
