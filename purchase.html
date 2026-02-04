@@ -153,7 +153,7 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     conversation.setParticipant(me);
     conversation.setParticipant(sellerUser);
 
-    // === Add overlay BEFORE mounting chat so it's instant ===
+    // === Add overlay BEFORE mounting chat for instant effect ===
     const overlay = document.createElement("div");
     overlay.style.position = "absolute";
     overlay.style.top = "65px"; // slightly up
@@ -162,10 +162,11 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     overlay.style.height = "40px"; // thick
     overlay.style.background = "black"; 
     overlay.style.borderRadius = "5px";
-    overlay.style.zIndex = "9999";
-    overlay.style.pointerEvents = "none";
+    overlay.style.zIndex = "10000"; // on top of TalkJS
+    overlay.style.pointerEvents = "none"; // clicks pass through
     chatContainer.appendChild(overlay);
 
+    // Mount the chat
     chatBoxInstance = session.createChatbox(conversation, {
         welcomeMessage: null,
         showChatHeader: true,
@@ -174,7 +175,7 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     chatBoxInstance.mount(chatContainer);
     chatContainer.style.display = "block";
 
-    // Optional: replace Test Mode text if it still appears
+    // Optional: replace default system message instantly
     const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
     if(defaultMsg){
         defaultMsg.textContent = "Welcome to your chat with the seller!";
