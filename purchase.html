@@ -82,6 +82,19 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     border-radius: 12px;
     overflow: hidden;
     display: none; /* hidden by default */
+    position: relative;
+}
+
+/* Black overlay to cover the Test Mode banner */
+#testOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40px; /* height of the Test Mode banner */
+    background: black;
+    z-index: 9999;
+    pointer-events: none; /* lets chat still be interactive */
 }
 </style>
 </head>
@@ -96,7 +109,9 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
         <button id="chatBtn">Open Chat with Seller</button>
     </div>
     <div class="right-panel">
-        <div id="chatContainer"></div>
+        <div id="chatContainer">
+            <div id="testOverlay"></div>
+        </div>
     </div>
 </div>
 
@@ -144,7 +159,7 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
         photoUrl: "https://i.imgur.com/0F9Z4.png"
     });
 
-    // Create TalkJS session using your App ID (free or paid)
+    // Create TalkJS session
     const session = new Talk.Session({
         appId: "tRkW5nYP",
         me: me,
@@ -158,20 +173,20 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
 
     // Create chatbox normally
     chatBoxInstance = session.createChatbox(conversation, {
-        welcomeMessage: null, // prevents default greeting if possible
+        welcomeMessage: null,
         showChatHeader: true,
         showUserList: false
     });
     chatBoxInstance.mount(chatContainer);
     chatContainer.style.display = "block";
 
-    // === Override the default system message for free accounts ===
+    // Replace default system message
     setTimeout(() => {
         const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
         if(defaultMsg){
-            defaultMsg.textContent = "Welcome to your chat with the seller!"; // your custom message
+            defaultMsg.textContent = "Welcome to your chat with the seller!";
         }
-    }, 500); // waits 0.5s for TalkJS to render
+    }, 500);
 });
 </script>
 
