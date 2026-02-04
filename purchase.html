@@ -81,7 +81,7 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     height: 95%;
     border-radius: 12px;
     overflow: hidden;
-    display: none; /* hidden by default */
+    display: none;
     position: relative;
 }
 </style>
@@ -129,7 +129,6 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
 
     await Talk.ready;
 
-    // Buyer
     const me = new Talk.User({
         id: userId,
         name: username,
@@ -137,7 +136,6 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
         photoUrl: `https://ui-avatars.com/api/?name=${username.charAt(0)}&background=00ff9c&color=000`
     });
 
-    // Seller
     const sellerUser = new Talk.User({
         id: "seller",
         name: "Seller",
@@ -145,19 +143,16 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
         photoUrl: "https://i.imgur.com/0F9Z4.png"
     });
 
-    // Session
     const session = new Talk.Session({
         appId: "tRkW5nYP",
         me: me,
         notify: true
     });
 
-    // Conversation
     const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me, sellerUser));
     conversation.setParticipant(me);
     conversation.setParticipant(sellerUser);
 
-    // Mount chatbox
     chatBoxInstance = session.createChatbox(conversation, {
         welcomeMessage: null,
         showChatHeader: true,
@@ -166,26 +161,25 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     chatBoxInstance.mount(chatContainer);
     chatContainer.style.display = "block";
 
-    // === Wait for TalkJS to render ===
+    // Add overlay dynamically after chat renders
     setTimeout(() => {
-        // Replace default system message
         const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
         if(defaultMsg){
             defaultMsg.textContent = "Welcome to your chat with the seller!";
         }
 
-        // Create black overlay dynamically
+        // Create gray overlay
         const overlay = document.createElement("div");
         overlay.style.position = "absolute";
-        overlay.style.top = "50px"; // adjust to match banner position
+        overlay.style.top = "55px"; // slightly lower
         overlay.style.left = "0";
         overlay.style.width = "100%";
-        overlay.style.height = "40px"; // roughly banner height
-        overlay.style.background = "black";
+        overlay.style.height = "30px"; // slightly shorter
+        overlay.style.background = "#555555"; // gray
         overlay.style.zIndex = "9999";
-        overlay.style.pointerEvents = "none"; // let chat work
+        overlay.style.pointerEvents = "none";
         chatContainer.appendChild(overlay);
-    }, 600); // slight delay to ensure chatbox is fully rendered
+    }, 600);
 });
 </script>
 
