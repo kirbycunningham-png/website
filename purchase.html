@@ -153,6 +153,19 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     conversation.setParticipant(me);
     conversation.setParticipant(sellerUser);
 
+    // === Add overlay BEFORE mounting chat so it's instant ===
+    const overlay = document.createElement("div");
+    overlay.style.position = "absolute";
+    overlay.style.top = "65px"; // slightly up
+    overlay.style.left = "22.5%"; // center horizontally with 55% width
+    overlay.style.width = "55%"; // slightly smaller sideways
+    overlay.style.height = "40px"; // thick
+    overlay.style.background = "black"; 
+    overlay.style.borderRadius = "5px";
+    overlay.style.zIndex = "9999";
+    overlay.style.pointerEvents = "none";
+    chatContainer.appendChild(overlay);
+
     chatBoxInstance = session.createChatbox(conversation, {
         welcomeMessage: null,
         showChatHeader: true,
@@ -161,26 +174,11 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     chatBoxInstance.mount(chatContainer);
     chatContainer.style.display = "block";
 
-    // Add overlay dynamically after chat renders
-    setTimeout(() => {
-        const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
-        if(defaultMsg){
-            defaultMsg.textContent = "Welcome to your chat with the seller!";
-        }
-
-        // Adjusted thick, slightly narrower black line overlay
-        const overlay = document.createElement("div");
-        overlay.style.position = "absolute";
-        overlay.style.top = "65px"; // slightly up
-        overlay.style.left = "22.5%"; // center horizontally with 55% width
-        overlay.style.width = "55%"; // slightly smaller sideways
-        overlay.style.height = "40px"; // keep thick
-        overlay.style.background = "black"; 
-        overlay.style.borderRadius = "5px";
-        overlay.style.zIndex = "9999";
-        overlay.style.pointerEvents = "none";
-        chatContainer.appendChild(overlay);
-    }, 600);
+    // Optional: replace Test Mode text if it still appears
+    const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
+    if(defaultMsg){
+        defaultMsg.textContent = "Welcome to your chat with the seller!";
+    }
 });
 </script>
 
