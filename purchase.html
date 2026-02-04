@@ -84,18 +84,6 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     display: none; /* hidden by default */
     position: relative;
 }
-
-/* Dynamic black overlay to cover Test Mode banner */
-#testOverlay {
-    position: absolute;
-    top: 60px; /* adjust this depending on banner height */
-    left: 0;
-    width: 100%;
-    height: 40px; /* roughly banner height */
-    background: black;
-    z-index: 9999;
-    pointer-events: none;
-}
 </style>
 </head>
 <body>
@@ -109,9 +97,7 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
         <button id="chatBtn">Open Chat with Seller</button>
     </div>
     <div class="right-panel">
-        <div id="chatContainer">
-            <div id="testOverlay"></div>
-        </div>
+        <div id="chatContainer"></div>
     </div>
 </div>
 
@@ -134,7 +120,6 @@ const userId = localStorage.getItem("userId") || "buyer_" + username;
 
 let chatBoxInstance = null;
 const chatContainer = document.getElementById("chatContainer");
-const testOverlay = document.getElementById("testOverlay");
 
 document.getElementById("chatBtn").addEventListener("click", async () => {
     if(!username || username === "Guest"){
@@ -144,7 +129,7 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
 
     await Talk.ready;
 
-    // Buyer (current user)
+    // Buyer
     const me = new Talk.User({
         id: userId,
         name: username,
@@ -152,7 +137,7 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
         photoUrl: `https://ui-avatars.com/api/?name=${username.charAt(0)}&background=00ff9c&color=000`
     });
 
-    // Seller (admin)
+    // Seller
     const sellerUser = new Talk.User({
         id: "seller",
         name: "Seller",
@@ -160,14 +145,14 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
         photoUrl: "https://i.imgur.com/0F9Z4.png"
     });
 
-    // Create TalkJS session
+    // Session
     const session = new Talk.Session({
         appId: "tRkW5nYP",
         me: me,
         notify: true
     });
 
-    // Get or create conversation
+    // Conversation
     const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me, sellerUser));
     conversation.setParticipant(me);
     conversation.setParticipant(sellerUser);
@@ -181,18 +166,26 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     chatBoxInstance.mount(chatContainer);
     chatContainer.style.display = "block";
 
-    // === Override default system message ===
+    // === Wait for TalkJS to render ===
     setTimeout(() => {
+        // Replace default system message
         const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
         if(defaultMsg){
             defaultMsg.textContent = "Welcome to your chat with the seller!";
         }
 
-        // Keep the black overlay visible on top of the banner
-        testOverlay.style.top = "60px"; // adjust based on actual banner size
-        testOverlay.style.height = "40px"; 
-        testOverlay.style.display = "block";
-    }, 500);
+        // Create black overlay dynamically
+        const overlay = document.createElement("div");
+        overlay.style.position = "absolute";
+        overlay.style.top = "50px"; // adjust to match banner position
+        overlay.style.left = "0";
+        overlay.style.width = "100%";
+        overlay.style.height = "40px"; // roughly banner height
+        overlay.style.background = "black";
+        overlay.style.zIndex = "9999";
+        overlay.style.pointerEvents = "none"; // let chat work
+        chatContainer.appendChild(overlay);
+    }, 600); // slight delay to ensure chatbox is fully rendered
 });
 </script>
 
