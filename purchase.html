@@ -162,7 +162,7 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     chatBoxInstance.mount(chatContainer);
     chatContainer.style.display = "block";
 
-    // === Add overlay after 400ms for reliability ===
+    // === Add overlay after 300ms for reliable top layer ===
     setTimeout(() => {
         const overlay = document.createElement("div");
         overlay.style.position = "absolute";
@@ -172,8 +172,8 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
         overlay.style.height = "40px";
         overlay.style.background = "black"; 
         overlay.style.borderRadius = "5px";
-        overlay.style.zIndex = "10000"; // ensure on top
-        overlay.style.pointerEvents = "none"; // clicks pass through
+        overlay.style.zIndex = "10000"; // ensure overlay stays above chat
+        overlay.style.pointerEvents = "none"; // allow chat interaction
         chatContainer.appendChild(overlay);
 
         // Optional: replace Test Mode text
@@ -181,7 +181,7 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
         if(defaultMsg){
             defaultMsg.textContent = "Welcome to your chat with the seller!";
         }
-    }, 400); // 400ms delay
+    }, 300); // 300ms delay
 });
 </script>
 
