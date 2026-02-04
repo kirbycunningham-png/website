@@ -153,19 +153,6 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     conversation.setParticipant(me);
     conversation.setParticipant(sellerUser);
 
-    // === Add overlay BEFORE mounting chat for instant effect ===
-    const overlay = document.createElement("div");
-    overlay.style.position = "absolute";
-    overlay.style.top = "65px"; // slightly up
-    overlay.style.left = "22.5%"; // center horizontally with 55% width
-    overlay.style.width = "55%"; // slightly smaller sideways
-    overlay.style.height = "40px"; // thick
-    overlay.style.background = "black"; 
-    overlay.style.borderRadius = "5px";
-    overlay.style.zIndex = "10000"; // on top of TalkJS
-    overlay.style.pointerEvents = "none"; // clicks pass through
-    chatContainer.appendChild(overlay);
-
     // Mount the chat
     chatBoxInstance = session.createChatbox(conversation, {
         welcomeMessage: null,
@@ -175,11 +162,26 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     chatBoxInstance.mount(chatContainer);
     chatContainer.style.display = "block";
 
-    // Optional: replace default system message instantly
-    const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
-    if(defaultMsg){
-        defaultMsg.textContent = "Welcome to your chat with the seller!";
-    }
+    // === Add overlay after 100ms so it's instantly on top ===
+    setTimeout(() => {
+        const overlay = document.createElement("div");
+        overlay.style.position = "absolute";
+        overlay.style.top = "65px";
+        overlay.style.left = "22.5%";
+        overlay.style.width = "55%";
+        overlay.style.height = "40px";
+        overlay.style.background = "black"; 
+        overlay.style.borderRadius = "5px";
+        overlay.style.zIndex = "10000"; // above TalkJS
+        overlay.style.pointerEvents = "none"; // allow chat interaction
+        chatContainer.appendChild(overlay);
+
+        // Optional: replace Test Mode text
+        const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
+        if(defaultMsg){
+            defaultMsg.textContent = "Welcome to your chat with the seller!";
+        }
+    }, 100); // 100ms delay
 });
 </script>
 
