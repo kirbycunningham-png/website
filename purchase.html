@@ -166,7 +166,6 @@ async function initChat() {
             overlay.style.pointerEvents = "none";
             chatContainer.appendChild(overlay);
 
-            // Replace Test Mode text if present
             const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
             if(defaultMsg){
                 defaultMsg.textContent = "Welcome to your chat with the seller!";
@@ -181,10 +180,13 @@ async function initChat() {
 // Initialize chat automatically
 initChat();
 
-// ===== Refresh page after 1.5 seconds of visiting =====
-setTimeout(() => {
-    window.location.reload();
-}, 1500);
+// ===== Refresh page once per session after 1 sec =====
+if(!sessionStorage.getItem("pageRefreshed")) {
+    sessionStorage.setItem("pageRefreshed", "true");
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
+}
 </script>
 
 </body>
