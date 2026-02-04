@@ -74,19 +74,6 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     overflow: hidden;
     position: relative;
 }
-
-/* Overlay to hide TalkJS "Test Mode" text */
-#overlayBox {
-    position: absolute;
-    top: 65px; /* adjust vertical position */
-    left: 22.5%;
-    width: 55%;
-    height: 40px;
-    background: #111111; /* overlay color */
-    border-radius: 5px;
-    z-index: 10000;
-    pointer-events: none;
-}
 </style>
 </head>
 <body>
@@ -100,8 +87,6 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     </div>
     <div class="right-panel">
         <div id="chatContainer"></div>
-        <!-- Overlay loaded immediately -->
-        <div id="overlayBox"></div>
     </div>
 </div>
 
@@ -123,7 +108,7 @@ const username = localStorage.getItem("username") || "Guest";
 const userId = localStorage.getItem("userId") || "buyer_" + username;
 
 (async function(){
-    if(!username || username === "Guest") return; // optional: redirect to signup if guest
+    if(!username || username === "Guest") return;
 
     await Talk.ready;
 
@@ -141,6 +126,7 @@ const userId = localStorage.getItem("userId") || "buyer_" + username;
         photoUrl: "https://i.imgur.com/0F9Z4.png"
     });
 
+    // Original session settings
     const session = new Talk.Session({
         appId: "tRkW5nYP",
         me: me,
@@ -151,12 +137,8 @@ const userId = localStorage.getItem("userId") || "buyer_" + username;
     conversation.setParticipant(me);
     conversation.setParticipant(sellerUser);
 
-    const chatBox = session.createChatbox(conversation, {
-        welcomeMessage: null,
-        showChatHeader: true,
-        showUserList: false
-    });
-
+    // Original chatbox creation
+    const chatBox = session.createChatbox(conversation);
     chatBox.mount(document.getElementById("chatContainer"));
 })();
 </script>
