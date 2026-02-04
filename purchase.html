@@ -72,6 +72,20 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     height: 100%;
     border-radius: 12px;
     overflow: hidden;
+    position: relative;
+}
+
+/* Overlay to hide TalkJS "Test Mode" text */
+#overlayBox {
+    position: absolute;
+    top: 65px; /* adjust vertical position */
+    left: 22.5%;
+    width: 55%;
+    height: 40px;
+    background: #111111; /* overlay color */
+    border-radius: 5px;
+    z-index: 10000;
+    pointer-events: none;
 }
 </style>
 </head>
@@ -86,6 +100,8 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     </div>
     <div class="right-panel">
         <div id="chatContainer"></div>
+        <!-- Overlay loaded immediately -->
+        <div id="overlayBox"></div>
     </div>
 </div>
 
