@@ -123,26 +123,30 @@ let chatBoxInstance = null;
 let overlay = null;
 const chatContainer = document.getElementById("chatContainer");
 
-// Function to add overlay immediately
-function addOverlay() {
-    if(!overlay){
-        overlay = document.createElement("div");
-        overlay.style.position = "absolute";
-        overlay.style.top = "65px";
-        overlay.style.left = "22.5%";
-        overlay.style.width = "55%";
-        overlay.style.height = "40px";
-        overlay.style.background = "#111111"; // overlay color
-        overlay.style.borderRadius = "5px";
-        overlay.style.zIndex = "10000";
-        overlay.style.pointerEvents = "none";
-        chatContainer.appendChild(overlay);
+// Function to safely add overlay after TalkJS renders
+function addOverlayWhenReady() {
+    const talkMsg = chatContainer.querySelector(".talkjs-message-system");
+    if(talkMsg || chatContainer.children.length > 0){
+        if(!overlay){
+            overlay = document.createElement("div");
+            overlay.style.position = "absolute";
+            overlay.style.top = "65px";
+            overlay.style.left = "22.5%";
+            overlay.style.width = "55%";
+            overlay.style.height = "40px";
+            overlay.style.background = "#111111"; // overlay color
+            overlay.style.borderRadius = "5px";
+            overlay.style.zIndex = "10000";
+            overlay.style.pointerEvents = "none";
+            chatContainer.appendChild(overlay);
 
-        // Replace Test Mode text if present
-        const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
-        if(defaultMsg){
-            defaultMsg.textContent = "Welcome to your chat with the seller!";
+            if(talkMsg){
+                talkMsg.textContent = "Welcome to your chat with the seller!";
+            }
         }
+    } else {
+        // Retry after 50ms if TalkJS hasn't rendered yet
+        setTimeout(addOverlayWhenReady, 50);
     }
 }
 
@@ -190,8 +194,8 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
 
     chatContainer.style.display = "block";
 
-    // Immediately add overlay
-    addOverlay();
+    // Ensure overlay loads after TalkJS fully renders
+    addOverlayWhenReady();
 });
 
 // Close Chat
