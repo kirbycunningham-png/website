@@ -17,6 +17,7 @@ body {
     flex-direction: column;
     align-items: center;
 }
+
 h1, h2 {
     color: #00ff9c;
     text-align: center;
@@ -27,16 +28,15 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
 
 .purchase-container {
     display: flex;
-    flex-wrap: wrap;
-    gap: 40px;
+    gap: 20px;
     width: 100%;
     max-width: 1200px;
     justify-content: center;
+    align-items: flex-start;
 }
 
 .left-panel {
-    flex: 1 1 250px;
-    min-width: 250px;
+    flex: 0 0 200px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -49,40 +49,29 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     border: none;
     cursor: pointer;
     transition: 0.3s;
-}
-
-#cashappBtn {
     background: #00c244;
-    color: white;
-}
-
-#chatBtn, #closeChatBtn {
-    background: #00aaff;
     color: white;
 }
 
 .left-panel button:hover { opacity: 0.85; }
 
 .right-panel {
-    flex: 2 1 500px;
-    min-width: 400px;
+    flex: 1 1 600px;
     height: 650px;
     border-radius: 20px;
-    background: #1c1e2a;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
+    width: 100%;
 }
 
 #chatContainer {
-    width: 95%;
-    height: 95%;
+    width: 100%;
+    height: 100%;
     border-radius: 12px;
     overflow: hidden;
-    display: none;
-    position: relative;
 }
 </style>
 </head>
@@ -94,8 +83,6 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
 <div class="purchase-container">
     <div class="left-panel">
         <button id="cashappBtn">Pay with CashApp</button>
-        <button id="chatBtn">Open Chat</button>
-        <button id="closeChatBtn">Close Chat</button>
     </div>
     <div class="right-panel">
         <div id="chatContainer"></div>
@@ -115,45 +102,12 @@ document.getElementById("cashappBtn").addEventListener("click", () => {
     window.location.href = "https://cash.app/$durgot";
 });
 
-// ===== TalkJS Chat =====
+// ===== TalkJS Chat Always Visible =====
 const username = localStorage.getItem("username") || "Guest";
 const userId = localStorage.getItem("userId") || "buyer_" + username;
 
-let chatBoxInstance = null;
-let overlay = null;
-const chatContainer = document.getElementById("chatContainer");
-
-// Check if this is the first chat open in this session
-let firstLoad = !sessionStorage.getItem("chatOpened");
-
-function addOverlay() {
-    if(!overlay){
-        overlay = document.createElement("div");
-        overlay.style.position = "absolute";
-        overlay.style.top = "65px";
-        overlay.style.left = "22.5%";
-        overlay.style.width = "55%";
-        overlay.style.height = "40px";
-        overlay.style.background = "#111111"; // overlay color
-        overlay.style.borderRadius = "5px";
-        overlay.style.zIndex = "10000";
-        overlay.style.pointerEvents = "none";
-        chatContainer.appendChild(overlay);
-
-        // Replace Test Mode text if present
-        const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
-        if(defaultMsg){
-            defaultMsg.textContent = "Welcome to your chat with the seller!";
-        }
-    }
-}
-
-// Open Chat
-document.getElementById("chatBtn").addEventListener("click", async () => {
-    if(!username || username === "Guest"){
-        window.location.href = "signup.html";
-        return;
-    }
+(async function(){
+    if(!username || username === "Guest") return; // optional: redirect to signup if guest
 
     await Talk.ready;
 
@@ -181,38 +135,14 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     conversation.setParticipant(me);
     conversation.setParticipant(sellerUser);
 
-    if(!chatBoxInstance){
-        chatBoxInstance = session.createChatbox(conversation, {
-            welcomeMessage: null,
-            showChatHeader: true,
-            showUserList: false
-        });
-        chatBoxInstance.mount(chatContainer);
-    }
+    const chatBox = session.createChatbox(conversation, {
+        welcomeMessage: null,
+        showChatHeader: true,
+        showUserList: false
+    });
 
-    chatContainer.style.display = "block";
-
-    // First load: add overlay with 350ms delay
-    if(firstLoad){
-        setTimeout(() => {
-            addOverlay();
-        }, 350);
-        sessionStorage.setItem("chatOpened", "true");
-        firstLoad = false;
-    } else {
-        // Subsequent opens: add overlay immediately
-        addOverlay();
-    }
-});
-
-// Close Chat
-document.getElementById("closeChatBtn").addEventListener("click", () => {
-    chatContainer.style.display = "none";
-    if(overlay){
-        overlay.remove();
-        overlay = null;
-    }
-});
+    chatBox.mount(document.getElementById("chatContainer"));
+})();
 </script>
 
 </body>
