@@ -123,6 +123,29 @@ let chatBoxInstance = null;
 let overlay = null;
 const chatContainer = document.getElementById("chatContainer");
 
+// Function to add overlay immediately
+function addOverlay() {
+    if(!overlay){
+        overlay = document.createElement("div");
+        overlay.style.position = "absolute";
+        overlay.style.top = "65px";
+        overlay.style.left = "22.5%";
+        overlay.style.width = "55%";
+        overlay.style.height = "40px";
+        overlay.style.background = "#111111"; // overlay color
+        overlay.style.borderRadius = "5px";
+        overlay.style.zIndex = "10000";
+        overlay.style.pointerEvents = "none";
+        chatContainer.appendChild(overlay);
+
+        // Replace Test Mode text if present
+        const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
+        if(defaultMsg){
+            defaultMsg.textContent = "Welcome to your chat with the seller!";
+        }
+    }
+}
+
 // Open Chat
 document.getElementById("chatBtn").addEventListener("click", async () => {
     if(!username || username === "Guest"){
@@ -167,28 +190,8 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
 
     chatContainer.style.display = "block";
 
-    // Add overlay after 350ms
-    setTimeout(() => {
-        if(!overlay){
-            overlay = document.createElement("div");
-            overlay.style.position = "absolute";
-            overlay.style.top = "65px";
-            overlay.style.left = "22.5%";
-            overlay.style.width = "55%";
-            overlay.style.height = "40px";
-            overlay.style.background = "#111111"; // overlay color
-            overlay.style.borderRadius = "5px";
-            overlay.style.zIndex = "10000";
-            overlay.style.pointerEvents = "none";
-            chatContainer.appendChild(overlay);
-
-            // Optional: replace Test Mode text
-            const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
-            if(defaultMsg){
-                defaultMsg.textContent = "Welcome to your chat with the seller!";
-            }
-        }
-    }, 350); // 350ms delay
+    // Immediately add overlay
+    addOverlay();
 });
 
 // Close Chat
