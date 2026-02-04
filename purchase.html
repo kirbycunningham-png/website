@@ -56,7 +56,7 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     color: white;
 }
 
-#chatBtn {
+#chatBtn, #closeChatBtn {
     background: #00aaff;
     color: white;
 }
@@ -94,7 +94,8 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
 <div class="purchase-container">
     <div class="left-panel">
         <button id="cashappBtn">Pay with CashApp</button>
-        <button id="chatBtn">Open Chat with Seller</button>
+        <button id="chatBtn">Open Chat</button>
+        <button id="closeChatBtn">Close Chat</button>
     </div>
     <div class="right-panel">
         <div id="chatContainer"></div>
@@ -119,8 +120,10 @@ const username = localStorage.getItem("username") || "Guest";
 const userId = localStorage.getItem("userId") || "buyer_" + username;
 
 let chatBoxInstance = null;
+let overlay = null;
 const chatContainer = document.getElementById("chatContainer");
 
+// Open Chat
 document.getElementById("chatBtn").addEventListener("click", async () => {
     if(!username || username === "Guest"){
         window.location.href = "signup.html";
@@ -153,35 +156,48 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     conversation.setParticipant(me);
     conversation.setParticipant(sellerUser);
 
-    // Mount the chat
-    chatBoxInstance = session.createChatbox(conversation, {
-        welcomeMessage: null,
-        showChatHeader: true,
-        showUserList: false
-    });
-    chatBoxInstance.mount(chatContainer);
+    if(!chatBoxInstance){
+        chatBoxInstance = session.createChatbox(conversation, {
+            welcomeMessage: null,
+            showChatHeader: true,
+            showUserList: false
+        });
+        chatBoxInstance.mount(chatContainer);
+    }
+
     chatContainer.style.display = "block";
 
-    // === Add overlay after 350ms for reliable top layer ===
+    // Add overlay after 375ms
     setTimeout(() => {
-        const overlay = document.createElement("div");
-        overlay.style.position = "absolute";
-        overlay.style.top = "65px";
-        overlay.style.left = "22.5%";
-        overlay.style.width = "55%";
-        overlay.style.height = "40px";
-        overlay.style.background = "#2b2e3b"; // match "Switch to Live Mode" text background
-        overlay.style.borderRadius = "5px";
-        overlay.style.zIndex = "10000"; // ensure overlay stays above chat
-        overlay.style.pointerEvents = "none"; // allow chat interaction
-        chatContainer.appendChild(overlay);
+        if(!overlay){
+            overlay = document.createElement("div");
+            overlay.style.position = "absolute";
+            overlay.style.top = "65px";
+            overlay.style.left = "22.5%";
+            overlay.style.width = "55%";
+            overlay.style.height = "40px";
+            overlay.style.background = "#111111"; // new overlay color
+            overlay.style.borderRadius = "5px";
+            overlay.style.zIndex = "10000";
+            overlay.style.pointerEvents = "none";
+            chatContainer.appendChild(overlay);
 
-        // Optional: replace Test Mode text
-        const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
-        if(defaultMsg){
-            defaultMsg.textContent = "Welcome to your chat with the seller!";
+            // Optional: replace Test Mode text
+            const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
+            if(defaultMsg){
+                defaultMsg.textContent = "Welcome to your chat with the seller!";
+            }
         }
-    }, 350); // 350ms delay
+    }, 375);
+});
+
+// Close Chat
+document.getElementById("closeChatBtn").addEventListener("click", () => {
+    chatContainer.style.display = "none";
+    if(overlay){
+        overlay.remove();
+        overlay = null;
+    }
 });
 </script>
 
