@@ -167,7 +167,7 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
 
     chatContainer.style.display = "block";
 
-    // Add overlay after 100ms
+    // Add overlay after 200ms
     setTimeout(() => {
         if(!overlay){
             overlay = document.createElement("div");
@@ -188,7 +188,7 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
                 defaultMsg.textContent = "Welcome to your chat with the seller!";
             }
         }
-    }, 100); // 100ms delay
+    }, 200); // 200ms delay
 });
 
 // Close Chat
