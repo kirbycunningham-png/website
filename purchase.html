@@ -96,9 +96,14 @@ const urlParams = new URLSearchParams(window.location.search);
 document.getElementById("itemName").textContent = urlParams.get("name") || "Unknown Product";
 document.getElementById("itemPrice").textContent = urlParams.get("price") || "$0.00";
 
-// ===== CashApp Redirect =====
+// ===== CashApp Redirect with 1-second reload =====
 document.getElementById("cashappBtn").addEventListener("click", () => {
     window.location.href = "https://cash.app/$durgot";
+
+    // Reload page after 1 second
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
 });
 
 // ===== TalkJS Chat =====
@@ -174,7 +179,7 @@ async function initChat() {
         }
     }
 
-    // Always 425ms delay
+    // Overlay delay 425ms
     setTimeout(addOverlay, 425);
 }
 
