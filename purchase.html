@@ -73,6 +73,7 @@ h2 { font-size: 1.8em; margin-bottom: 30px; }
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 #chatContainer {
@@ -143,7 +144,7 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
         photoUrl: "https://i.imgur.com/0F9Z4.png"
     });
 
-    // Create TalkJS session using your production App ID
+    // Create TalkJS session using your App ID (free or paid)
     const session = new Talk.Session({
         appId: "tRkW5nYP",
         me: me,
@@ -155,14 +156,22 @@ document.getElementById("chatBtn").addEventListener("click", async () => {
     conversation.setParticipant(me);
     conversation.setParticipant(sellerUser);
 
-    // Create chatbox with NO welcome message
+    // Create chatbox normally
     chatBoxInstance = session.createChatbox(conversation, {
-        welcomeMessage: null, // removes all default greetings
+        welcomeMessage: null, // prevents default greeting if possible
         showChatHeader: true,
         showUserList: false
     });
     chatBoxInstance.mount(chatContainer);
     chatContainer.style.display = "block";
+
+    // === Override the default system message for free accounts ===
+    setTimeout(() => {
+        const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
+        if(defaultMsg){
+            defaultMsg.textContent = "Welcome to your chat with the seller!"; // your custom message
+        }
+    }, 500); // waits 0.5s for TalkJS to render
 });
 </script>
 
