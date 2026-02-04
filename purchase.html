@@ -152,26 +152,30 @@ async function initChat() {
 
     chatContainer.style.display = "block";
 
-    // Add black overlay immediately after TalkJS loads
-    if(!overlay){
-        overlay = document.createElement("div");
-        overlay.style.position = "absolute";
-        overlay.style.top = "65px";
-        overlay.style.left = "22.5%";
-        overlay.style.width = "55%";
-        overlay.style.height = "40px";
-        overlay.style.background = "#111111"; // your requested color
-        overlay.style.borderRadius = "5px";
-        overlay.style.zIndex = "10000";
-        overlay.style.pointerEvents = "none";
-        chatContainer.appendChild(overlay);
+    function addOverlay() {
+        if(!overlay){
+            overlay = document.createElement("div");
+            overlay.style.position = "absolute";
+            overlay.style.top = "65px";
+            overlay.style.left = "22.5%";
+            overlay.style.width = "55%";
+            overlay.style.height = "40px";
+            overlay.style.background = "#111111"; // black overlay
+            overlay.style.borderRadius = "5px";
+            overlay.style.zIndex = "10000";
+            overlay.style.pointerEvents = "none";
+            chatContainer.appendChild(overlay);
 
-        // Replace Test Mode text if present
-        const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
-        if(defaultMsg){
-            defaultMsg.textContent = "Welcome to your chat with the seller!";
+            // Replace Test Mode text if present
+            const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
+            if(defaultMsg){
+                defaultMsg.textContent = "Welcome to your chat with the seller!";
+            }
         }
     }
+
+    // Always 300ms delay
+    setTimeout(addOverlay, 300);
 }
 
 // Initialize chat automatically
