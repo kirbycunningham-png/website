@@ -96,14 +96,9 @@ const urlParams = new URLSearchParams(window.location.search);
 document.getElementById("itemName").textContent = urlParams.get("name") || "Unknown Product";
 document.getElementById("itemPrice").textContent = urlParams.get("price") || "$0.00";
 
-// ===== CashApp Redirect with 1-second reload =====
+// ===== CashApp Redirect =====
 document.getElementById("cashappBtn").addEventListener("click", () => {
     window.location.href = "https://cash.app/$durgot";
-
-    // Reload page after 1 second
-    setTimeout(() => {
-        window.location.reload();
-    }, 1000);
 });
 
 // ===== TalkJS Chat =====
@@ -179,12 +174,17 @@ async function initChat() {
         }
     }
 
-    // Overlay delay 425ms
-    setTimeout(addOverlay, 425);
+    // Overlay delay 450ms
+    setTimeout(addOverlay, 450);
 }
 
 // Initialize chat automatically
 initChat();
+
+// ===== Refresh page after 1.5 seconds of visiting =====
+setTimeout(() => {
+    window.location.reload();
+}, 1500);
 </script>
 
 </body>
