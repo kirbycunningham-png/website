@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Secure Checkout – ElDorado</title>
+<title>Secure Checkout</title>
 
 <script src="https://cdn.talkjs.com/talk.js"></script>
 
@@ -17,9 +17,7 @@
   --muted: #9ca3af;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -32,28 +30,17 @@ body {
   justify-content: center;
 }
 
-main.checkout {
+main {
   width: 100%;
   max-width: 1200px;
   background: var(--card);
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
 }
 
 .header {
   text-align: center;
-  margin-bottom: 40px;
-}
-
-.header h1 {
-  margin: 0;
-  font-size: 2.2rem;
-}
-
-.header p {
-  margin-top: 8px;
-  color: var(--muted);
+  margin-bottom: 32px;
 }
 
 .content {
@@ -63,46 +50,13 @@ main.checkout {
 }
 
 @media (max-width: 900px) {
-  .content {
-    grid-template-columns: 1fr;
-  }
+  .content { grid-template-columns: 1fr; }
 }
 
 .payment-card {
   background: var(--card-soft);
   border-radius: 20px;
   padding: 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.payment-card .label {
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.payment-card h2 {
-  margin: 0;
-  font-size: 1.6rem;
-}
-
-.price {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: var(--accent);
-}
-
-#cashappBtn {
-  margin-top: 10px;
-  padding: 16px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 14px;
-  border: none;
-  cursor: pointer;
-  background: var(--accent);
-  color: #022c22;
 }
 
 .chat-panel {
@@ -110,7 +64,6 @@ main.checkout {
   border-radius: 20px;
   padding: 10px;
   height: 600px;
-  display: flex;
 }
 
 #chatContainer {
@@ -124,18 +77,16 @@ main.checkout {
 
 <body>
 
-<main class="checkout">
+<main>
   <div class="header">
     <h1>Secure Checkout</h1>
-    <p>Complete your purchase and chat with the seller instantly</p>
+    <p>Chat directly with the seller</p>
   </div>
 
   <section class="content">
     <div class="payment-card">
-      <span class="label">You’re purchasing</span>
-      <h2 id="itemName">Loading...</h2>
-      <div class="price" id="itemPrice">$0.00</div>
-      <button id="cashappBtn">Pay with Cash App</button>
+      <h2 id="itemName">Item</h2>
+      <div id="itemPrice">$0.00</div>
     </div>
 
     <div class="chat-panel">
@@ -145,29 +96,14 @@ main.checkout {
 </main>
 
 <script>
-// ===== Product Info =====
-const params = new URLSearchParams(window.location.search);
-document.getElementById("itemName").textContent =
-  params.get("name") || "Unknown Product";
-document.getElementById("itemPrice").textContent =
-  params.get("price") || "$0.00";
-
-// ===== Cash App =====
-document.getElementById("cashappBtn").onclick = () => {
-  window.location.href = "https://cash.app/$durgot";
-};
-
-// ===== TalkJS =====
-const username = localStorage.getItem("username") || "Buyer";
-const userId = localStorage.getItem("userId") || `buyer_${username}`;
-
-(async function initChat() {
+(async function () {
   await Talk.ready;
 
+  const username = localStorage.getItem("username") || "Buyer";
+
   const me = new Talk.User({
-    id: userId,
-    name: username,
-    photoUrl: `https://ui-avatars.com/api/?name=${username}&background=4ade80&color=022c22`
+    id: "buyer_" + username,
+    name: username
   });
 
   const seller = new Talk.User({
@@ -183,6 +119,7 @@ const userId = localStorage.getItem("userId") || `buyer_${username}`;
   const conversation = session.getOrCreateConversation(
     Talk.oneOnOneId(me, seller)
   );
+
   conversation.setParticipant(me);
   conversation.setParticipant(seller);
 
@@ -193,42 +130,47 @@ const userId = localStorage.getItem("userId") || `buyer_${username}`;
 
     chatHeader: {
       backgroundColor: "#15182a",
-      textColor: "#e5e7eb",
-      height: 48,
-      padding: 10
+      height: 46,
+      padding: 10,
+      textColor: "#e5e7eb"
     },
 
     messageList: {
-      backgroundColor: "#1b1f36",
-      padding: 12
+      padding: 12,
+      gap: 6
+    },
+
+    avatar: {
+      size: 0
     },
 
     message: {
       whiteSpace: "normal",
-      borderRadius: 12,
+      borderRadius: 14,
       borderWidth: 1,
       borderStyle: "solid",
-      padding: "10px 12px",
+      padding: "10px 14px",
       fontSize: 14,
-      maxWidth: "calc(100% - 6rem)"
-    },
-
-    messageByOthers: {
-      backgroundColor: "#F2F2F2",
-      textColor: "#171717",
-      borderColor: "#F2F2F2",
-      align: "left"
+      maxWidth: "70%",
+      display: "inline-block"
     },
 
     messageByMe: {
       backgroundColor: "#171717",
       textColor: "#ffffff",
       borderColor: "#171717",
-      align: "right"
+      align: "right",
+      marginLeft: "auto",
+      marginRight: 6
     },
 
-    avatar: {
-      size: 28
+    messageByOthers: {
+      backgroundColor: "#F2F2F2",
+      textColor: "#171717",
+      borderColor: "#F2F2F2",
+      align: "left",
+      marginRight: "auto",
+      marginLeft: 6
     },
 
     messageField: {
