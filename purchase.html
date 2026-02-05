@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Checkout – ElDorado Marketplace</title>
+<title>Secure Checkout – ElDorado</title>
 
 <script src="https://cdn.talkjs.com/talk.js"></script>
 
@@ -103,23 +103,12 @@ main.checkout {
   cursor: pointer;
   background: var(--accent);
   color: #022c22;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-#cashappBtn:hover {
-  transform: translateY(-1px);
-  opacity: 0.9;
-}
-
-.hint {
-  font-size: 0.85rem;
-  color: var(--muted);
 }
 
 .chat-panel {
   background: var(--card-soft);
   border-radius: 20px;
-  padding: 16px;
+  padding: 10px;
   height: 600px;
   display: flex;
 }
@@ -127,7 +116,7 @@ main.checkout {
 #chatContainer {
   width: 100%;
   height: 100%;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
 }
 </style>
@@ -146,12 +135,7 @@ main.checkout {
       <span class="label">You’re purchasing</span>
       <h2 id="itemName">Loading...</h2>
       <div class="price" id="itemPrice">$0.00</div>
-
       <button id="cashappBtn">Pay with Cash App</button>
-
-      <span class="hint">
-        Stay in chat after payment to confirm delivery.
-      </span>
     </div>
 
     <div class="chat-panel">
@@ -169,33 +153,26 @@ document.getElementById("itemPrice").textContent =
   params.get("price") || "$0.00";
 
 // ===== Cash App =====
-document.getElementById("cashappBtn").addEventListener("click", () => {
+document.getElementById("cashappBtn").onclick = () => {
   window.location.href = "https://cash.app/$durgot";
-});
+};
 
 // ===== TalkJS =====
-const username = localStorage.getItem("username");
+const username = localStorage.getItem("username") || "Buyer";
 const userId = localStorage.getItem("userId") || `buyer_${username}`;
 
-async function initChat() {
-  if (!username) {
-    window.location.href = "signup.html";
-    return;
-  }
-
+(async function initChat() {
   await Talk.ready;
 
   const me = new Talk.User({
     id: userId,
     name: username,
-    email: "buyer@example.com",
     photoUrl: `https://ui-avatars.com/api/?name=${username}&background=4ade80&color=022c22`
   });
 
   const seller = new Talk.User({
     id: "seller",
-    name: "Seller",
-    email: "seller@example.com"
+    name: "Seller"
   });
 
   const session = new Talk.Session({
@@ -209,45 +186,62 @@ async function initChat() {
   conversation.setParticipant(me);
   conversation.setParticipant(seller);
 
-  // 🔥 CUSTOM THEME
   const theme = {
     chat: {
       backgroundColor: "#1b1f36"
     },
 
+    chatHeader: {
+      backgroundColor: "#15182a",
+      textColor: "#e5e7eb",
+      height: 48,
+      padding: 10
+    },
+
     messageList: {
       backgroundColor: "#1b1f36",
-      padding: 16
+      padding: 12
     },
 
     message: {
-      borderRadius: 18,
-      maxWidth: "75%",
-      fontSize: 14
-    },
-
-    messageByMe: {
-      backgroundColor: "#4ade80",
-      textColor: "#022c22",
-      align: "right"
+      whiteSpace: "normal",
+      borderRadius: 12,
+      borderWidth: 1,
+      borderStyle: "solid",
+      padding: "10px 12px",
+      fontSize: 14,
+      maxWidth: "calc(100% - 6rem)"
     },
 
     messageByOthers: {
-      backgroundColor: "#23284a",
-      textColor: "#e5e7eb",
+      backgroundColor: "#F2F2F2",
+      textColor: "#171717",
+      borderColor: "#F2F2F2",
       align: "left"
+    },
+
+    messageByMe: {
+      backgroundColor: "#171717",
+      textColor: "#ffffff",
+      borderColor: "#171717",
+      align: "right"
+    },
+
+    avatar: {
+      size: 28
     },
 
     messageField: {
       backgroundColor: "#15182a",
       textColor: "#e5e7eb",
-      borderRadius: 14
+      height: 44,
+      borderRadius: 12
     },
 
     sendButton: {
       backgroundColor: "#4ade80",
       textColor: "#022c22",
-      borderRadius: 12
+      size: 36
     }
   };
 
@@ -258,9 +252,7 @@ async function initChat() {
   });
 
   chatbox.mount(document.getElementById("chatContainer"));
-}
-
-initChat();
+})();
 </script>
 
 </body>
