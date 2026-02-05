@@ -1,192 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Purchase - ElDorado Marketplace</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Checkout – ElDorado Marketplace</title>
+
 <script src="https://cdn.talkjs.com/talk.js"></script>
+
 <style>
+:root {
+  --bg: #0e1018;
+  --card: #15182a;
+  --card-soft: #1b1f36;
+  --accent: #4ade80;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #0f1115, #1a1c25);
-    color: #fff;
-    min-height: 100vh;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-h1, h2 {
-    color: #00ff9c;
-    text-align: center;
-    margin: 0;
-}
-h1 { font-size: 2.5em; margin-bottom: 10px; }
-h2 { font-size: 1.8em; margin-bottom: 30px; }
-
-.purchase-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 40px;
-    width: 100%;
-    max-width: 1200px;
-    justify-content: center;
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
 }
 
-.left-panel {
-    flex: 1 1 250px;
-    min-width: 250px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+main.checkout {
+  width: 100%;
+  max-width: 1200px;
+  background: var(--card);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2.2rem;
+}
+
+.header p {
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+/* Layout */
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 32px;
+}
+
+@media (max-width: 900px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Payment Card */
+.payment-card {
+  background: var(--card-soft);
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.payment-card .label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.payment-card h2 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.price {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--accent);
 }
 
 #cashappBtn {
-    padding: 15px;
-    font-weight: bold;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    background: #00c244;
-    color: white;
-    transition: 0.3s;
+  margin-top: 10px;
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  background: var(--accent);
+  color: #022c22;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
-#cashappBtn:hover { opacity: 0.85; }
 
-.right-panel {
-    flex: 2 1 500px;
-    min-width: 400px;
-    height: 650px;
-    border-radius: 20px;
-    background: #1c1e2a;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
+#cashappBtn:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* Chat */
+.chat-panel {
+  background: var(--card-soft);
+  border-radius: 20px;
+  padding: 16px;
+  height: 600px;
+  display: flex;
 }
 
 #chatContainer {
-    width: 95%;
-    height: 95%;
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
 }
 </style>
 </head>
+
 <body>
 
-<h1 id="itemName">Loading Product...</h1>
-<h2 id="itemPrice">$0.00</h2>
+<main class="checkout">
+  <div class="header">
+    <h1>Secure Checkout</h1>
+    <p>Complete your purchase and chat with the seller instantly</p>
+  </div>
 
-<div class="purchase-container">
-    <div class="left-panel">
-        <button id="cashappBtn">Pay with CashApp</button>
+  <section class="content">
+    <!-- LEFT: PAYMENT -->
+    <div class="payment-card">
+      <span class="label">You’re purchasing</span>
+      <h2 id="itemName">Loading...</h2>
+      <div class="price" id="itemPrice">$0.00</div>
+
+      <button id="cashappBtn">Pay with Cash App</button>
+
+      <span class="hint">
+        After payment, stay in this chat to confirm delivery with the seller.
+      </span>
     </div>
-    <div class="right-panel">
-        <div id="chatContainer"></div>
+
+    <!-- RIGHT: CHAT -->
+    <div class="chat-panel">
+      <div id="chatContainer"></div>
     </div>
-</div>
+  </section>
+</main>
 
 <script>
-// ===== Dynamic Product Info =====
-const urlParams = new URLSearchParams(window.location.search);
-document.getElementById("itemName").textContent = urlParams.get("name") || "Unknown Product";
-document.getElementById("itemPrice").textContent = urlParams.get("price") || "$0.00";
+// ===== Product Info from URL =====
+const params = new URLSearchParams(window.location.search);
+document.getElementById("itemName").textContent =
+  params.get("name") || "Unknown Product";
+document.getElementById("itemPrice").textContent =
+  params.get("price") || "$0.00";
 
-// ===== CashApp Redirect =====
+// ===== Cash App Button =====
 document.getElementById("cashappBtn").addEventListener("click", () => {
-    window.location.href = "https://cash.app/$durgot";
+  window.location.href = "https://cash.app/$durgot";
 });
 
 // ===== TalkJS Chat =====
-const username = localStorage.getItem("username") || "Guest";
-const userId = localStorage.getItem("userId") || "buyer_" + username;
-
-let chatBoxInstance = null;
-let overlay = null;
-const chatContainer = document.getElementById("chatContainer");
+const username = localStorage.getItem("username");
+const userId = localStorage.getItem("userId") || `buyer_${username}`;
 
 async function initChat() {
-    if(!username || username === "Guest"){
-        window.location.href = "signup.html";
-        return;
-    }
+  if (!username) {
+    window.location.href = "signup.html";
+    return;
+  }
 
-    await Talk.ready;
+  await Talk.ready;
 
-    const me = new Talk.User({
-        id: userId,
-        name: username,
-        email: "guest@example.com",
-        photoUrl: `https://ui-avatars.com/api/?name=${username.charAt(0)}&background=00ff9c&color=000`
-    });
+  const me = new Talk.User({
+    id: userId,
+    name: username,
+    email: "buyer@example.com",
+    photoUrl: `https://ui-avatars.com/api/?name=${username}&background=4ade80&color=022c22`
+  });
 
-    const sellerUser = new Talk.User({
-        id: "seller",
-        name: "Seller",
-        email: "seller@example.com",
-        photoUrl: "https://i.imgur.com/0F9Z4.png"
-    });
+  const seller = new Talk.User({
+    id: "seller",
+    name: "Seller",
+    email: "seller@example.com"
+  });
 
-    const session = new Talk.Session({
-        appId: "tRkW5nYP",
-        me: me,
-        notify: true
-    });
+  const session = new Talk.Session({
+    appId: "tRkW5nYP",
+    me
+  });
 
-    const conversation = session.getOrCreateConversation(Talk.oneOnOneId(me, sellerUser));
-    conversation.setParticipant(me);
-    conversation.setParticipant(sellerUser);
+  const conversation = session.getOrCreateConversation(
+    Talk.oneOnOneId(me, seller)
+  );
+  conversation.setParticipant(me);
+  conversation.setParticipant(seller);
 
-    if(!chatBoxInstance){
-        chatBoxInstance = session.createChatbox(conversation, {
-            welcomeMessage: null,
-            showChatHeader: true,
-            showUserList: false
-        });
-        chatBoxInstance.mount(chatContainer);
-    }
+  const chatbox = session.createChatbox(conversation, {
+    showChatHeader: true,
+    showUserList: false
+  });
 
-    chatContainer.style.display = "block";
-
-    function addOverlay() {
-        if(!overlay){
-            overlay = document.createElement("div");
-            overlay.style.position = "absolute";
-            overlay.style.top = "65px";
-            overlay.style.left = "22.5%";
-            overlay.style.width = "55%";
-            overlay.style.height = "40px";
-            overlay.style.background = "#111111"; // black overlay
-            overlay.style.borderRadius = "5px";
-            overlay.style.zIndex = "10000";
-            overlay.style.pointerEvents = "none";
-            chatContainer.appendChild(overlay);
-
-            const defaultMsg = chatContainer.querySelector(".talkjs-message-system");
-            if(defaultMsg){
-                defaultMsg.textContent = "Welcome to your chat with the seller!";
-            }
-        }
-    }
-
-    // Overlay delay 450ms
-    setTimeout(addOverlay, 450);
+  chatbox.mount(document.getElementById("chatContainer"));
 }
 
-// Initialize chat automatically
 initChat();
-
-// ===== Refresh page once per session after 1 sec =====
-if(!sessionStorage.getItem("pageRefreshed")) {
-    sessionStorage.setItem("pageRefreshed", "true");
-    setTimeout(() => {
-        window.location.reload();
-    }, 1000);
-}
 </script>
 
 </body>
