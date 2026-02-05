@@ -17,7 +17,9 @@
   --muted: #9ca3af;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -36,7 +38,7 @@ main.checkout {
   background: var(--card);
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 30px 80px rgba(0,0,0,.45);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
 }
 
 .header {
@@ -61,7 +63,9 @@ main.checkout {
 }
 
 @media (max-width: 900px) {
-  .content { grid-template-columns: 1fr; }
+  .content {
+    grid-template-columns: 1fr;
+  }
 }
 
 .payment-card {
@@ -74,7 +78,7 @@ main.checkout {
 }
 
 .payment-card .label {
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: var(--muted);
 }
 
@@ -90,6 +94,7 @@ main.checkout {
 }
 
 #cashappBtn {
+  margin-top: 10px;
   padding: 16px;
   font-size: 1rem;
   font-weight: 600;
@@ -98,6 +103,17 @@ main.checkout {
   cursor: pointer;
   background: var(--accent);
   color: #022c22;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+#cashappBtn:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--muted);
 }
 
 .chat-panel {
@@ -105,6 +121,7 @@ main.checkout {
   border-radius: 20px;
   padding: 16px;
   height: 600px;
+  display: flex;
 }
 
 #chatContainer {
@@ -121,7 +138,7 @@ main.checkout {
 <main class="checkout">
   <div class="header">
     <h1>Secure Checkout</h1>
-    <p>Chat with the seller to complete your order</p>
+    <p>Complete your purchase and chat with the seller instantly</p>
   </div>
 
   <section class="content">
@@ -129,7 +146,12 @@ main.checkout {
       <span class="label">You’re purchasing</span>
       <h2 id="itemName">Loading...</h2>
       <div class="price" id="itemPrice">$0.00</div>
+
       <button id="cashappBtn">Pay with Cash App</button>
+
+      <span class="hint">
+        Stay in chat after payment to confirm delivery.
+      </span>
     </div>
 
     <div class="chat-panel">
@@ -139,47 +161,41 @@ main.checkout {
 </main>
 
 <script>
-// ================= PRODUCT INFO =================
+// ===== Product Info =====
 const params = new URLSearchParams(window.location.search);
 document.getElementById("itemName").textContent =
   params.get("name") || "Unknown Product";
 document.getElementById("itemPrice").textContent =
   params.get("price") || "$0.00";
 
-document.getElementById("cashappBtn").onclick = () => {
+// ===== Cash App =====
+document.getElementById("cashappBtn").addEventListener("click", () => {
   window.location.href = "https://cash.app/$durgot";
-};
+});
 
-// ================= TALKJS FIX =================
-
-// 🔐 CREATE STABLE BUYER ID (THIS IS THE KEY)
-if (!localStorage.getItem("buyerId")) {
-  localStorage.setItem("buyerId", "buyer_" + crypto.randomUUID());
-}
-
-// Demo username fallback
-if (!localStorage.getItem("username")) {
-  localStorage.setItem("username", "Buyer");
-}
-
+// ===== TalkJS =====
 const username = localStorage.getItem("username");
-const buyerId = localStorage.getItem("buyerId");
+const userId = localStorage.getItem("userId") || `buyer_${username}`;
 
 async function initChat() {
+  if (!username) {
+    window.location.href = "signup.html";
+    return;
+  }
+
   await Talk.ready;
 
-  // 👤 BUYER (YOU)
   const me = new Talk.User({
-    id: buyerId,
+    id: userId,
     name: username,
-    role: "buyer"
+    email: "buyer@example.com",
+    photoUrl: `https://ui-avatars.com/api/?name=${username}&background=4ade80&color=022c22`
   });
 
-  // 🧑 SELLER (ALWAYS SAME ID)
   const seller = new Talk.User({
-    id: "seller_account_1",
+    id: "seller",
     name: "Seller",
-    role: "seller"
+    email: "seller@example.com"
   });
 
   const session = new Talk.Session({
@@ -190,14 +206,19 @@ async function initChat() {
   const conversation = session.getOrCreateConversation(
     Talk.oneOnOneId(me, seller)
   );
-
   conversation.setParticipant(me);
   conversation.setParticipant(seller);
 
-  // 🎨 THEME (VISUAL ONLY)
+  // 🔥 CUSTOM THEME
   const theme = {
-    chat: { backgroundColor: "#1b1f36" },
-    messageList: { backgroundColor: "#1b1f36", padding: 16 },
+    chat: {
+      backgroundColor: "#1b1f36"
+    },
+
+    messageList: {
+      backgroundColor: "#1b1f36",
+      padding: 16
+    },
 
     message: {
       borderRadius: 18,
@@ -207,12 +228,14 @@ async function initChat() {
 
     messageByMe: {
       backgroundColor: "#4ade80",
-      textColor: "#022c22"
+      textColor: "#022c22",
+      align: "right"
     },
 
     messageByOthers: {
       backgroundColor: "#23284a",
-      textColor: "#e5e7eb"
+      textColor: "#e5e7eb",
+      align: "left"
     },
 
     messageField: {
@@ -223,7 +246,8 @@ async function initChat() {
 
     sendButton: {
       backgroundColor: "#4ade80",
-      textColor: "#022c22"
+      textColor: "#022c22",
+      borderRadius: 12
     }
   };
 
