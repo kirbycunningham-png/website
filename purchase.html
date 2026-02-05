@@ -41,7 +41,6 @@ main.checkout {
   box-shadow: 0 30px 80px rgba(0,0,0,0.45);
 }
 
-/* Header */
 .header {
   text-align: center;
   margin-bottom: 40px;
@@ -57,7 +56,6 @@ main.checkout {
   color: var(--muted);
 }
 
-/* Layout */
 .content {
   display: grid;
   grid-template-columns: 1fr 1.6fr;
@@ -70,7 +68,6 @@ main.checkout {
   }
 }
 
-/* Payment Card */
 .payment-card {
   background: var(--card-soft);
   border-radius: 20px;
@@ -117,10 +114,8 @@ main.checkout {
 .hint {
   font-size: 0.85rem;
   color: var(--muted);
-  line-height: 1.4;
 }
 
-/* Chat */
 .chat-panel {
   background: var(--card-soft);
   border-radius: 20px;
@@ -147,7 +142,6 @@ main.checkout {
   </div>
 
   <section class="content">
-    <!-- LEFT: PAYMENT -->
     <div class="payment-card">
       <span class="label">You’re purchasing</span>
       <h2 id="itemName">Loading...</h2>
@@ -156,11 +150,10 @@ main.checkout {
       <button id="cashappBtn">Pay with Cash App</button>
 
       <span class="hint">
-        After payment, stay in this chat to confirm delivery with the seller.
+        Stay in chat after payment to confirm delivery.
       </span>
     </div>
 
-    <!-- RIGHT: CHAT -->
     <div class="chat-panel">
       <div id="chatContainer"></div>
     </div>
@@ -168,19 +161,19 @@ main.checkout {
 </main>
 
 <script>
-// ===== Product Info from URL =====
+// ===== Product Info =====
 const params = new URLSearchParams(window.location.search);
 document.getElementById("itemName").textContent =
   params.get("name") || "Unknown Product";
 document.getElementById("itemPrice").textContent =
   params.get("price") || "$0.00";
 
-// ===== Cash App Button =====
+// ===== Cash App =====
 document.getElementById("cashappBtn").addEventListener("click", () => {
   window.location.href = "https://cash.app/$durgot";
 });
 
-// ===== TalkJS Chat =====
+// ===== TalkJS =====
 const username = localStorage.getItem("username");
 const userId = localStorage.getItem("userId") || `buyer_${username}`;
 
@@ -216,7 +209,50 @@ async function initChat() {
   conversation.setParticipant(me);
   conversation.setParticipant(seller);
 
+  // 🔥 CUSTOM THEME
+  const theme = {
+    chat: {
+      backgroundColor: "#1b1f36"
+    },
+
+    messageList: {
+      backgroundColor: "#1b1f36",
+      padding: 16
+    },
+
+    message: {
+      borderRadius: 18,
+      maxWidth: "75%",
+      fontSize: 14
+    },
+
+    messageByMe: {
+      backgroundColor: "#4ade80",
+      textColor: "#022c22",
+      align: "right"
+    },
+
+    messageByOthers: {
+      backgroundColor: "#23284a",
+      textColor: "#e5e7eb",
+      align: "left"
+    },
+
+    messageField: {
+      backgroundColor: "#15182a",
+      textColor: "#e5e7eb",
+      borderRadius: 14
+    },
+
+    sendButton: {
+      backgroundColor: "#4ade80",
+      textColor: "#022c22",
+      borderRadius: 12
+    }
+  };
+
   const chatbox = session.createChatbox(conversation, {
+    theme,
     showChatHeader: true,
     showUserList: false
   });
