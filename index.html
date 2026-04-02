@@ -2,246 +2,118 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Games</title>
+<title>Username Checker</title>
 <style>
-body {
-  margin: 0;
-  overflow: hidden;
-  background: black;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-canvas {
-  display: block;
-}
+    body {
+        font-family: Arial;
+        background: #0f172a;
+        color: white;
+        padding: 20px;
+    }
+    textarea, input {
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 8px;
+        border: none;
+    }
+    button {
+        padding: 10px 20px;
+        background: #22c55e;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    #results {
+        margin-top: 20px;
+        white-space: pre-wrap;
+        background: #1e293b;
+        padding: 10px;
+        border-radius: 8px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
 </style>
 </head>
 <body>
 
-<canvas id="c"></canvas>
+<h2>Discord Username Checker</h2>
+
+<label>Proxies (one per line)</label>
+<textarea id="proxies" placeholder="ip:port or user:pass@ip:port"></textarea>
+
+<label>Usernames (one per line)</label>
+<textarea id="usernames" placeholder="abc\nxyz\ncool_name"></textarea>
+
+<button onclick="startCheck()">Start Checking</button>
+
+<div id="results"></div>
 
 <script>
-const canvas = document.getElementById("c");
-const ctx = canvas.getContext("2d");
+let proxies = [];
+let proxyIndex = 0;
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-// GAME STATE
-let state = "menu";
-let score = 0;
-let combo = 0;
-let multiplier = 1;
-let shake = 0;
-
-// PLAYER
-let player = {
-  x: canvas.width / 2,
-  y: canvas.height - 80,
-  w: 60,
-  h: 15,
-  vx: 0,
-  dash: 0,
-  shield: 0
-};
-
-// INPUT
-let keys = {};
-addEventListener("keydown", e => {
-  keys[e.key] = true;
-  if (state !== "playing") start();
-});
-addEventListener("keyup", e => keys[e.key] = false);
-
-// OBJECTS
-let enemies = [];
-let particles = [];
-let powerups = [];
-
-// START GAME
-function start() {
-  state = "playing";
-  score = 0;
-  combo = 0;
-  multiplier = 1;
-  enemies = [];
-  particles = [];
-  powerups = [];
+function getNextProxy() {
+    if (proxies.length === 0) return null;
+    const proxy = proxies[proxyIndex];
+    proxyIndex = (proxyIndex + 1) % proxies.length;
+    return proxy;
 }
 
-// SPAWN ENEMIES
-function spawnEnemy() {
-  if (state !== "playing") return;
+// MOCK checker (replace with real API/backend)
+async function checkUsername(username, proxy) {
+    // simulate delay
+    await new Promise(r => setTimeout(r, 200));
 
-  let type = Math.random();
-  let speed = 2 + Math.random() * 2;
+    // fake random result
+    const available = Math.random() > 0.7;
 
-  if (type < 0.7) {
-    enemies.push({x: Math.random()*canvas.width, y:-20, s:20, v:speed, hp:1});
-  } else if (type < 0.9) {
-    enemies.push({x: Math.random()*canvas.width, y:-20, s:15, v:speed*2, hp:1});
-  } else {
-    enemies.push({x: Math.random()*canvas.width, y:-20, s:30, v:speed*0.7, hp:3});
-  }
-
-  // random powerup
-  if (Math.random() < 0.1) {
-    powerups.push({x: Math.random()*canvas.width, y:-20, t: Math.random()<0.5?"slow":"shield"});
-  }
+    return {
+        username,
+        available
+    };
 }
 
-// UPDATE
-function update() {
-  if (state !== "playing") return;
+async function startCheck() {
+    const usernamesInput = document.getElementById("usernames").value;
+    const proxiesInput = document.getElementById("proxies").value;
+    const resultsDiv = document.getElementById("results");
 
-  // movement
-  if (keys["ArrowLeft"]) player.vx -= 0.6;
-  if (keys["ArrowRight"]) player.vx += 0.6;
+    resultsDiv.innerHTML = "Checking...\n";
 
-  player.vx *= 0.9;
-  player.x += player.vx;
+    const usernames = usernamesInput.split("\n").map(u => u.trim()).filter(Boolean);
+    proxies = proxiesInput.split("\n").map(p => p.trim()).filter(Boolean);
 
-  player.x = Math.max(0, Math.min(canvas.width-player.w, player.x));
+    let concurrency = 10; // increase for speed
+    let index = 0;
 
-  // dash
-  if (keys[" "] && player.dash <= 0) {
-    player.vx *= 5;
-    player.dash = 60;
-  }
-  player.dash--;
+    async function worker() {
+        while (index < usernames.length) {
+            let i = index++;
+            let username = usernames[i];
+            let proxy = getNextProxy();
 
-  // enemies
-  enemies.forEach((e,i)=>{
-    e.y += e.v;
+            try {
+                let result = await checkUsername(username, proxy);
 
-    if (
-      e.y + e.s > player.y &&
-      e.x < player.x + player.w &&
-      e.x + e.s > player.x
-    ) {
-      if (player.shield > 0) {
-        player.shield = 0;
-      } else {
-        shake = 20;
-        state = "gameover";
-      }
+                resultsDiv.innerHTML += 
+                    `${result.available ? "✅" : "❌"} ${username}\n`;
+            } catch (e) {
+                resultsDiv.innerHTML += `⚠️ Error: ${username}\n`;
+            }
+        }
     }
 
-    if (e.y > canvas.height) {
-      enemies.splice(i,1);
-      combo = 0;
-      multiplier = 1;
+    let workers = [];
+    for (let i = 0; i < concurrency; i++) {
+        workers.push(worker());
     }
-  });
 
-  // powerups
-  powerups.forEach((p,i)=>{
-    p.y += 2;
+    await Promise.all(workers);
 
-    if (
-      p.y > player.y &&
-      p.x < player.x + player.w &&
-      p.x > player.x
-    ) {
-      if (p.t === "slow") {
-        enemies.forEach(e=>e.v *= 0.5);
-      } else {
-        player.shield = 300;
-      }
-      powerups.splice(i,1);
-    }
-  });
-
-  player.shield--;
-
-  // particles
-  particles.forEach((p,i)=>{
-    p.x+=p.vx; p.y+=p.vy; p.life--;
-    if (p.life<=0) particles.splice(i,1);
-  });
-
-  score += 0.1 * multiplier;
+    resultsDiv.innerHTML += "\nDone.";
 }
-
-// DRAW BACKGROUND GRID
-function drawGrid() {
-  ctx.strokeStyle = "#0ff";
-  ctx.globalAlpha = 0.2;
-
-  for (let i=0;i<canvas.height;i+=40){
-    ctx.beginPath();
-    ctx.moveTo(0,i + (Date.now()*0.05)%40);
-    ctx.lineTo(canvas.width,i + (Date.now()*0.05)%40);
-    ctx.stroke();
-  }
-
-  ctx.globalAlpha = 1;
-}
-
-// DRAW
-function draw() {
-  ctx.fillStyle = "black";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  drawGrid();
-
-  if (shake > 0) {
-    ctx.translate(Math.random()*shake-shake/2, Math.random()*shake-shake/2);
-    shake--;
-  }
-
-  if (state === "menu") {
-    ctx.font = "40px Arial";
-    ctx.fillText("NEON SURVIVAL", canvas.width/2-180, canvas.height/2);
-    ctx.font = "20px Arial";
-    ctx.fillText("Press Any Key", canvas.width/2-80, canvas.height/2+40);
-    return;
-  }
-
-  if (state === "gameover") {
-    ctx.font = "40px Arial";
-    ctx.fillText("GAME OVER", canvas.width/2-140, canvas.height/2);
-    ctx.fillText("Score: "+Math.floor(score), canvas.width/2-120, canvas.height/2+50);
-    return;
-  }
-
-  // player
-  ctx.fillStyle = player.shield>0 ? "lime":"cyan";
-  ctx.shadowColor = ctx.fillStyle;
-  ctx.shadowBlur = 20;
-  ctx.fillRect(player.x,player.y,player.w,player.h);
-
-  // enemies
-  enemies.forEach(e=>{
-    ctx.fillStyle = e.hp>1 ? "orange":"red";
-    ctx.shadowColor = ctx.fillStyle;
-    ctx.fillRect(e.x,e.y,e.s,e.s);
-  });
-
-  // powerups
-  powerups.forEach(p=>{
-    ctx.fillStyle = p.t==="slow"?"blue":"green";
-    ctx.fillRect(p.x,p.y,15,15);
-  });
-
-  ctx.shadowBlur = 0;
-
-  // UI
-  ctx.fillStyle="white";
-  ctx.fillText("Score: "+Math.floor(score),20,30);
-  ctx.fillText("Combo: "+combo,20,50);
-}
-
-// LOOP
-function loop(){
-  ctx.setTransform(1,0,0,1,0,0);
-  update();
-  draw();
-  requestAnimationFrame(loop);
-}
-
-setInterval(spawnEnemy, 700);
-loop();
 </script>
 
 </body>
