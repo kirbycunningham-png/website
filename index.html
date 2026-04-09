@@ -1,425 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Sniper-Style Username Checker 2026</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #202225;
-            color: #dcddde;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            background: #2f3136;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.6);
-        }
-        h1 {
-            color: #f04747;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #b9bbbe;
-            margin-bottom: 25px;
-        }
-        .note {
-            background: #202225;
-            padding: 18px;
-            border-radius: 6px;
-            margin-bottom: 25px;
-            border-left: 4px solid #f04747;
-            font-size: 0.95em;
-        }
-        label {
-            display: block;
-            margin: 15px 0 8px;
-            font-weight: 600;
-            color: #b9bbbe;
-        }
-        textarea, input {
-            width: 100%;
-            padding: 14px;
-            background: #36393f;
-            border: 1px solid #202225;
-            border-radius: 4px;
-            color: #dcddde;
-            font-family: 'Consolas', monospace;
-            font-size: 14px;
-        }
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin: 20px 0;
-        }
-        button {
-            padding: 12px 24px;
-            font-weight: bold;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        #startBtn {
-            background: #f04747;
-            color: white;
-        }
-        #startBtn:hover { background: #e03e3e; }
-        #stopBtn {
-            background: #5865f2;
-            color: white;
-        }
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .progress-container {
-            margin: 20px 0;
-        }
-        .progress {
-            height: 10px;
-            background: #202225;
-            border-radius: 9999px;
-            overflow: hidden;
-        }
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #f04747, #faa61a);
-            width: 0%;
-            transition: width 0.4s ease;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #292b2f;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 14px 12px;
-            text-align: left;
-            border-bottom: 1px solid #202225;
-        }
-        th {
-            background: #202225;
-            color: #949ba4;
-        }
-        .status-available {
-            color: #3ba55c;
-            font-weight: bold;
-        }
-        .status-taken {
-            color: #ed4245;
-            font-weight: bold;
-        }
-        .status-error {
-            color: #faa61a;
-        }
-        .log {
-            background: #202225;
-            padding: 15px;
-            border-radius: 6px;
-            max-height: 220px;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 13px;
-            line-height: 1.4;
-            white-space: pre-wrap;
-        }
-        .highlight {
-            animation: highlight 1.5s ease;
-        }
-        @keyframes highlight {
-            0% { background: #3ba55c33; }
-            100% { background: transparent; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Password Brute Force Speed Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #0f0;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 { color: #0ff; }
+    #output {
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    #speed {
+      font-size: 20px;
+      color: #ff0;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #0f0;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎯 Discord Sniper-Style Username Checker</h1>
-        <p class="subtitle">Fast bulk checker with proxy rotation • Real-time • Like real snipers use</p>
 
-        <div class="note">
-            <strong>How it works like Discord snipers:</strong><br>
-            • Uses the most reliable public endpoint (api.lixqa.de/v3/discord/pomelo/) that snipers and checkers rely on in 2026.<br>
-            • Supports bulk lists, proxy rotation, random delays, and user-agent rotation to mimic sniper behavior and reduce blocks.<br>
-            • Available = code 2 → Green & highlighted<br>
-            • Taken/Reserved = code 3/4/5 → Red<br>
-            • Enter one username per line.<br>
-            • Proxies (http/socks) help bypass rate limits — highly recommended for bulk.<br><br>
-            <strong>Tip:</strong> Save as <code>discord-sniper-checker.html</code> and open in Chrome/Firefox. Use good proxies for best results.
-        </div>
+<h1>Brute Force Password Speed Demo</h1>
 
-        <label for="usernames">Usernames to check (one per line - bulk supported)</label>
-        <textarea id="usernames" rows="12" placeholder="ogname&#10;threeletter&#10;coolguy2026&#10;xyz123&#10;rare4l"></textarea>
+<button onclick="start()">Start Test</button>
 
-        <label for="proxies">Proxies (optional - one per line, http://ip:port or http://user:pass@ip:port)</label>
-        <textarea id="proxies" rows="6" placeholder="http://123.45.67.89:8080&#10;socks5://user:pass@45.67.89.10:1080"></textarea>
+<div id="output">Current Guess: ----</div>
+<div id="speed">Speed: 0 guesses/sec</div>
 
-        <div class="controls">
-            <button id="startBtn">🚀 Start Sniper Check</button>
-            <button id="stopBtn" disabled>⏹️ Stop</button>
-            <button id="clearBtn">🧹 Clear Results</button>
-        </div>
+<script>
+const chars = "abcdefghijklmnopqrstuvwxyz";
+let running = false;
 
-        <div class="progress-container">
-            <div>Progress: <span id="progressText">0 / 0</span> — <span id="currentUsername"></span></div>
-            <div class="progress">
-                <div id="progressBar" class="progress-bar"></div>
-            </div>
-        </div>
+function start() {
+  if (running) return;
+  running = true;
 
-        <h2 style="margin: 25px 0 10px;">Results</h2>
-        <table id="resultsTable">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Status</th>
-                    <th>Response</th>
-                </tr>
-            </thead>
-            <tbody id="resultsBody"></tbody>
-        </table>
+  let count = 0;
+  let startTime = performance.now();
 
-        <h2 style="margin: 25px 0 10px;">Live Log</h2>
-        <div id="log" class="log"></div>
-    </div>
+  function bruteForce() {
+    for (let i = 0; i < 5000; i++) { // batch size (adjust for speed)
+      let guess =
+        chars[Math.floor(count / (26*26*26)) % 26] +
+        chars[Math.floor(count / (26*26)) % 26] +
+        chars[Math.floor(count / 26) % 26] +
+        chars[count % 26];
 
-    <script>
-        // =====================================================
-        // Discord Sniper-Style Username Checker (2026 Edition)
-        // Uses reliable public API that real checkers/snipers use
-        // Supports proxy rotation + anti-detection delays
-        // =====================================================
+      document.getElementById("output").textContent = "Current Guess: " + guess;
 
-        let isRunning = false;
-        let stopRequested = false;
-        let proxyList = [];
-        let proxyIndex = 0;
+      count++;
 
-        const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const usernamesTA = document.getElementById('usernames');
-        const proxiesTA = document.getElementById('proxies');
-        const resultsBody = document.getElementById('resultsBody');
-        const logDiv = document.getElementById('log');
-        const progressText = document.getElementById('progressText');
-        const progressBar = document.getElementById('progressBar');
-        const currentUsernameEl = document.getElementById('currentUsername');
+      if (count >= Math.pow(26, 4)) {
+        running = false;
+        return;
+      }
+    }
 
-        function log(msg, type = 'info') {
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            let prefix = 'ℹ️';
-            let color = '#dcddde';
-            if (type === 'success') { prefix = '✅'; color = '#3ba55c'; }
-            if (type === 'error') { prefix = '❌'; color = '#ed4245'; }
-            if (type === 'warn') { prefix = '⚠️'; color = '#faa61a'; }
-            
-            logDiv.innerHTML += `<span style="color:${color}">[${time}] ${prefix} ${msg}</span><br>`;
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
+    let elapsed = (performance.now() - startTime) / 1000;
+    let speed = Math.floor(count / elapsed);
 
-        function addResult(username, status, details) {
-            const row = document.createElement('tr');
-            let cls = 'status-error';
-            let statusText = 'Error';
+    document.getElementById("speed").textContent =
+      "Speed: " + speed + " guesses/sec";
 
-            if (status === 'available') {
-                cls = 'status-available';
-                statusText = '✅ AVAILABLE';
-                row.classList.add('highlight');
-            } else if (status === 'taken') {
-                cls = 'status-taken';
-                statusText = '❌ Taken';
-            }
+    requestAnimationFrame(bruteForce);
+  }
 
-            row.innerHTML = `
-                <td><strong>@${username}</strong></td>
-                <td class="${cls}">${statusText}</td>
-                <td style="font-size:0.9em; color:#b9bbbe;">${details}</td>
-            `;
-            resultsBody.appendChild(row);
-        }
+  bruteForce();
+}
+</script>
 
-        function getProxies() {
-            const text = proxiesTA.value.trim();
-            if (!text) return [];
-            return text.split('\n').map(p => p.trim()).filter(Boolean);
-        }
-
-        async function delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
-        async function checkUsername(username) {
-            const clean = username.toLowerCase().trim().replace(/[^a-z0-9_.]/g, '');
-            if (clean.length < 2 || clean.length > 32) {
-                return { status: 'error', details: 'Invalid length (2-32 chars)' };
-            }
-
-            const url = `https://api.lixqa.de/v3/discord/pomelo/${encodeURIComponent(clean)}`;
-
-            // Rotate User-Agent to look more natural
-            const userAgents = [
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0',
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36'
-            ];
-
-            const options = {
-                method: 'GET',
-                headers: {
-                    'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)],
-                    'Accept': 'application/json'
-                }
-            };
-
-            // Simulate proxy usage (browser CORS limits real proxy passthrough)
-            // In real sniper tools people use this endpoint with residential proxies in Python/Node
-            if (proxyList.length > 0) {
-                proxyIndex = (proxyIndex + 1) % proxyList.length;
-                log(`Using proxy slot ${proxyIndex + 1} for @${clean}`, 'info');
-            }
-
-            try {
-                // Random delay like real snipers (anti-rate-limit)
-                await delay(400 + Math.random() * 900);
-
-                const res = await fetch(url, options);
-
-                if (!res.ok) {
-                    throw new Error(`HTTP ${res.status}`);
-                }
-
-                const data = await res.json();
-
-                // API response codes (based on current 2026 public endpoint)
-                // 2 = Available
-                // 3/4/5 = Taken or Reserved
-                if (data.code === 2) {
-                    return { status: 'available', details: 'Username is free! (code 2)' };
-                } else if ([3, 4, 5].includes(data.code)) {
-                    return { status: 'taken', details: `Taken/Reserved (code ${data.code})` };
-                } else {
-                    return { status: 'error', details: `Unknown code: ${data.code} - ${data.message || 'No message'}` };
-                }
-
-            } catch (err) {
-                console.error(err);
-                return { 
-                    status: 'error', 
-                    details: err.message.includes('fetch') ? 'Network / Rate limit' : err.message 
-                };
-            }
-        }
-
-        async function runSniperCheck() {
-            if (isRunning) return;
-
-            const rawUsernames = usernamesTA.value.trim();
-            if (!rawUsernames) {
-                alert("Please enter at least one username.");
-                return;
-            }
-
-            isRunning = true;
-            stopRequested = false;
-            startBtn.disabled = true;
-            stopBtn.disabled = false;
-            resultsBody.innerHTML = '';
-            logDiv.innerHTML = '';
-
-            log('🚀 Starting sniper-style bulk check...', 'success');
-            log('Using public lixqa pomelo API (most used by checkers in 2026)', 'info');
-
-            const usernameList = rawUsernames.split('\n')
-                .map(u => u.trim())
-                .filter(u => u.length > 0);
-
-            proxyList = getProxies();
-            log(`Loaded ${usernameList.length} usernames | ${proxyList.length} proxies`, 'info');
-
-            let completed = 0;
-            const total = usernameList.length;
-
-            for (const username of usernameList) {
-                if (stopRequested) {
-                    log('⏹️ Check stopped by user.', 'warn');
-                    break;
-                }
-
-                currentUsernameEl.textContent = `@${username}`;
-                progressText.textContent = `${completed}/${total}`;
-                progressBar.style.width = `${(completed / total) * 100}%`;
-
-                log(`Checking @${username}...`);
-
-                const result = await checkUsername(username);
-
-                addResult(username, result.status, result.details);
-
-                if (result.status === 'available') {
-                    log(`🎉 @${username} is AVAILABLE!`, 'success');
-                } else if (result.status === 'taken') {
-                    log(`❌ @${username} is taken.`, 'error');
-                } else {
-                    log(`⚠️ @${username} → ${result.details}`, 'warn');
-                }
-
-                completed++;
-                progressText.textContent = `${completed}/${total}`;
-                progressBar.style.width = `${(completed / total) * 100}%`;
-
-                // Extra delay between checks
-                if (completed < total) await delay(150 + Math.random() * 350);
-            }
-
-            progressBar.style.width = '100%';
-            currentUsernameEl.textContent = 'Finished';
-            log('✅ Sniper check completed!', 'success');
-
-            isRunning = false;
-            startBtn.disabled = false;
-            stopBtn.disabled = true;
-        }
-
-        // Event Listeners
-        startBtn.addEventListener('click', runSniperCheck);
-
-        stopBtn.addEventListener('click', () => {
-            stopRequested = true;
-            log('Stop requested - finishing current check...', 'warn');
-        });
-
-        clearBtn.addEventListener('click', () => {
-            if (confirm('Clear all results and logs?')) {
-                resultsBody.innerHTML = '';
-                logDiv.innerHTML = '';
-                progressBar.style.width = '0%';
-                progressText.textContent = '0 / 0';
-                currentUsernameEl.textContent = '';
-            }
-        });
-
-        // Keyboard support
-        document.addEventListener('keydown', e => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !isRunning) {
-                runSniperCheck();
-            }
-        });
-
-        // Initial log
-        log('Discord Sniper Checker ready.', 'success');
-        log('Paste your list and hit Start. Use proxies for heavy bulk checks.', 'info');
-    </script>
 </body>
 </html>
