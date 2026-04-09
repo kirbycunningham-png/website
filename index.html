@@ -1,77 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Password Brute Force Speed Demo</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #0f0;
-      text-align: center;
-      padding: 40px;
-    }
-    h1 { color: #0ff; }
-    #output {
-      font-size: 24px;
-      margin: 20px 0;
-    }
-    #speed {
-      font-size: 20px;
-      color: #ff0;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background: #0f0;
-      border: none;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Login + Brute Force Demo</title>
+<style>
+  body {
+    font-family: Arial;
+    background: #111;
+    color: #0f0;
+    text-align: center;
+    padding: 40px;
+  }
+  input, button {
+    padding: 10px;
+    margin: 10px;
+    font-size: 16px;
+  }
+  #status {
+    margin-top: 20px;
+    font-size: 20px;
+  }
+</style>
 </head>
 <body>
 
-<h1>Brute Force Password Speed Demo</h1>
+<h1>Login Simulation</h1>
 
-<button onclick="start()">Start Test</button>
+<p>Set a 4-letter password:</p>
+<input id="passwordInput" maxlength="4" placeholder="e.g. abcd">
+<br>
+<button onclick="startAttack()">Login</button>
 
-<div id="output">Current Guess: ----</div>
-<div id="speed">Speed: 0 guesses/sec</div>
+<div id="status"></div>
 
 <script>
 const chars = "abcdefghijklmnopqrstuvwxyz";
-let running = false;
 
-function start() {
-  if (running) return;
-  running = true;
+function startAttack() {
+  let target = document.getElementById("passwordInput").value;
+
+  if (target.length !== 4) {
+    alert("Password must be exactly 4 lowercase letters.");
+    return;
+  }
 
   let count = 0;
   let startTime = performance.now();
 
   function bruteForce() {
-    for (let i = 0; i < 5000; i++) { // batch size (adjust for speed)
+    for (let i = 0; i < 5000; i++) {
+
       let guess =
         chars[Math.floor(count / (26*26*26)) % 26] +
         chars[Math.floor(count / (26*26)) % 26] +
         chars[Math.floor(count / 26) % 26] +
         chars[count % 26];
 
-      document.getElementById("output").textContent = "Current Guess: " + guess;
+      document.getElementById("status").textContent =
+        "Trying: " + guess;
 
-      count++;
+      if (guess === target) {
+        let time = ((performance.now() - startTime) / 1000).toFixed(2);
 
-      if (count >= Math.pow(26, 4)) {
-        running = false;
+        document.getElementById("status").innerHTML =
+          "✅ Password found: <b>" + guess + "</b><br>" +
+          "Guesses: " + count + "<br>" +
+          "Time: " + time + " seconds";
+
         return;
       }
+
+      count++;
     }
-
-    let elapsed = (performance.now() - startTime) / 1000;
-    let speed = Math.floor(count / elapsed);
-
-    document.getElementById("speed").textContent =
-      "Speed: " + speed + " guesses/sec";
 
     requestAnimationFrame(bruteForce);
   }
